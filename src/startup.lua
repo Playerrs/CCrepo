@@ -12,7 +12,7 @@ local function downloadSongs(url, name)
 end
 
 local function _list()
-    local f = fs.open('list.lua', 'r')
+    local f = fs.open('available.lua', 'r')
     local t = {}
     for l in f.readLine do
         local s = {}
@@ -35,6 +35,7 @@ local decoder = dfpwm.make_decoder()
 local speaker = peripheral.find("speaker") -- Speakers
 
 local listOfSongs = _listOfSongs()
+local available = _list()
 
 ---@param songName string
 local function playSong(songName)
@@ -45,17 +46,17 @@ local function playSong(songName)
     for input in io.lines(path, 16 * 1024) do
         local decoded = decoder(input)
         while not speaker.playAudio(decoded) do
-
             os.pullEvent("speaker_audio_empty")
         end
     end
     io.close()
+    shell.run("delete songs/")
 end
 
 --- testes
-if not fs.exists('list.lua') then error("The 'list' archive doesn't exists!") end
+if not fs.exists('available.lua') then error("The 'available.lua' archive doesn't exists!") end
 local downloaded = false
-for _,v in pairs(_list()) do
+for _,v in pairs(available) do
     if not fs.exists("songs/"..v.name..".dfpwm") then
         downloadSongs(v.url, v.name)
         downloaded = true
@@ -73,4 +74,6 @@ end
 print("}")
 term.write("\n\n> ")
 playSong(read()..".dfpwm")
+print("\nRebooting...")
+sleep(2)
 os.reboot()
