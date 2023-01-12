@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "1.2"
+local version = "1.21"
 
 -- Utils
 
@@ -55,6 +55,7 @@ for _, side in pairs({ 'back', 'top', 'left', 'right', 'bottom' }) do
 end
 
 local W, H = mon.getSize()
+mon.setTextScale(0.5)
 
 local tpMonitor = touchpoint.new(sideMonitor)
 local buttons = {}
@@ -141,12 +142,16 @@ for _,v in ipairs(available) do
             writeMon("By: Player_rs, Reavik", colors.white, 1, H)
             term.setTextColor(colors.orange)
             playSong(v.url)
-        end, xMin, yMin, xMax, yMax, colors.blue, nil)
-        end
+        end, xMin, yMin, xMax, yMax, colors.blue)
+    end
 
     yMin = yMax +2
     yMax = yMin +2
 end
+
+--addButton(tpMonitor, "STOP", function()
+--    print(shell.run("speaker stop"))
+--end, W/2, 4, (W/2)+12, 6, colors.red)
 
 tpMonitor:draw()
 
