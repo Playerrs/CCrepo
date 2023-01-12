@@ -12,7 +12,7 @@ local function downloadSongs(url, name)
 end
 
 local function _list()
-    local f = fs.open('list', 'r')
+    local f = fs.open('list.lua', 'r')
     local t = {}
     for l in f.readLine do
         local s = {}
@@ -53,7 +53,7 @@ local function playSong(songName)
 end
 
 --- testes
-if not fs.exists('list') then error("The 'list' archive doesn't exists!") end
+if not fs.exists('list.lua') then error("The 'list' archive doesn't exists!") end
 local downloaded = false
 for _,v in pairs(_list()) do
     if not fs.exists("songs/"..v.name..".dfpwm") then
