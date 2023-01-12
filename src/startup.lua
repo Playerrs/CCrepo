@@ -71,38 +71,15 @@ local listOfSongs = _listOfSongs()
 ---@param songName string
 local function playSong(songName)
     local path = rootDir.."songs/"..songName
-    --local f = fs.open(rootDir..songName, 'rb')
-    shell.run("speaker play "..path)--)
-    --f.close()
 
+    for input in io.lines(path, 16 * 1024) do
+        local decoded = decoder(input)
+        while not speaker.playAudio(decoded) do
 
-    --local out = fs.open(path, "wb")
-    --for input in io.lines(path, 16 * 1024) do
-    --    local decoded = decoder(input)
-    --    local output = {}
-    --
-    --    -- Read two samples at once and take the average.
-    --    for i = 1, #decoded, 2 do
-    --        local value_1, value_2 = decoded[i], decoded[i + 1]
-    --        output[(i + 1) / 2] = (value_1 + value_2) / 2
-    --    end
-    --
-    --    out.write(encoder(output))
-    --
-    --    sleep(0) -- This program takes a while to run, so we need to make sure we yield.
-    --end
-    --out.close()
-
-    --for chunk in io.lines(path, 16 * 1024) do
-    --    local buffer = decoder(chunk)
-    --    print(buffer)
-    --    print("--------")
-    --    print(chunk)
-    --
-    --    while not speaker.playAudio(buffer) do
-    --        os.pullEvent("speaker_audio_empty")
-    --    end
-    --end
+            os.pullEvent("speaker_audio_empty")
+        end
+    end
+    io.close()
 end
 
 --- testes
@@ -114,5 +91,5 @@ for _,v in ipairs(listOfSongs) do
     print(v)
 end
 --shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
-shell.run("speaker play /songs/musioca.dfpwm")
---playSong(listOfSongs[1])
+playSong("musioca.dfpwm")
+
