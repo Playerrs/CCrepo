@@ -87,9 +87,13 @@ if not fs.exists('songs/musioca.dfpwm') then
     downloadSongs("https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download", "musioca")
 end
 
+if not fs.exists('songs/musioca2.dfpwm') then
+    downloadSongs("https://drive.google.com/u/0/uc?id=1LPQhHAwzd_Nz1_PEnSK0HY0cxhJMDu5p&export=download", "musioca2")
+end
+
 for _,v in ipairs(listOfSongs) do
     print(v)
 end
 --shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
-playSong("musioca.dfpwm")
+playSong("musioca2.dfpwm")
 
