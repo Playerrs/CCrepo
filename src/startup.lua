@@ -32,18 +32,81 @@ local function unserialize(name)
     return data
 end
 
----@
---local function
+---@param name string
+local function _checkDownloaded(name)
+
+end
+
+local function _listOfSongs()
+    if not fs.exists(rootDir.."songs") then
+        error([[The "songs" folder doesn't exists!]])
+    end
+    --local folder = fs.list(rootDir.."songs")
+    --for k, v in pairs(folder)do
+    --    print(k,v)
+    --end
+    return fs.list(rootDir.."songs")
+end
+
+---@param url string
+---@param name string
+local function downloadSongs(url, name)
+    local path = rootDir.."songs/"..name..".dfpwm"
+    shell.run(string.format('wget %s %s', url, path))
+end
+
 
 
 -- Loaders
+if not fs.exists(rootDir..'songs') then fs.makeDir(rootDir..'songs') end
+
 serialize(version, ".versionMusic") -- Salva a versão do script em um arquivo
 
-os.loadAPI('/SS/API/Manager.lua')   -- API
+os.loadAPI('/API/Manager.lua')      -- API
 local api = Manager                 -- API
-local Menu = require('/SS/API/Menus')
+local Menu = require('/API/Menus')
 local dfpwm = require("cc.audio.dfpwm")
+local encoder = dfpwm.make_encoder()
+local decoder = dfpwm.make_decoder()
 
 local speaker = peripheral.find("speaker") -- Speakers
 
+local listOfSongs = _listOfSongs()
 
+---@param songName string
+local function playSong(songName)
+    --local f = fs.open(rootDir..songName, 'wb')
+    --shell.run("speaker play "..f.readAll())
+    --f.close()
+
+    --local encoder = dfpwm.make_encoder()
+    --local decoder = dfpwm.make_decoder()
+    local path = rootDir.."songs/"..songName
+
+    local out = fs.open(path, "wb")
+    for input in io.lines(path, 16 * 1024 * 2) do
+        local decoded = decoder(input)
+        local output = {}
+
+        -- Read two samples at once and take the average.
+        for i = 1, #decoded, 2 do
+            local value_1, value_2 = decoded[i], decoded[i + 1]
+            output[(i + 1) / 2] = (value_1 + value_2) / 2
+        end
+
+        out.write(encoder(output))
+
+        sleep(0) -- This program takes a while to run, so we need to make sure we yield.
+    end
+end
+
+--- testes
+if not fs.exists('songs/musioca.dfpwm') then
+    downloadSongs("https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download", "musioca")
+end
+
+for _,v in ipairs(listOfSongs) do
+    print(v)
+end
+
+playSong(listOfSongs[1])

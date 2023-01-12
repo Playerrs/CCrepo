@@ -1,4 +1,4 @@
-local version = "1.25"
+local version = "1.3"
 
 function serialize(data, name)
     if not fs.exists('SS/data') then
@@ -10,7 +10,17 @@ function serialize(data, name)
 end
 serialize(version, ".versionMenus")
 
-os.loadAPI('/SS/API/Manager.lua')
+local pathManager
+if fs.exists("/SS/API/Manager.lua") then
+    pathManager = "/SS/API/Manager.lua"
+else
+    if not fs.exists("/API/Manager.lua") then
+        error('Menus.lua tried to loadAPI "Manager.lua" and did not find the file')
+    end
+    pathManager = "/API/Manager.lua"
+end
+
+os.loadAPI(pathManager)
 local api = Manager
 local W,H = term.getSize()
 
