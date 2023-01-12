@@ -70,30 +70,39 @@ local listOfSongs = _listOfSongs()
 
 ---@param songName string
 local function playSong(songName)
-    --local f = fs.open(rootDir..songName, 'wb')
-    --shell.run("speaker play "..f.readAll())
+    local path = rootDir.."songs/"..songName
+    --local f = fs.open(rootDir..songName, 'rb')
+    shell.run("speaker play "..path)--)
     --f.close()
 
-    --local encoder = dfpwm.make_encoder()
-    --local decoder = dfpwm.make_decoder()
-    local path = rootDir.."songs/"..songName
 
-    local out = fs.open(path, "wb")
-    for input in io.lines(path, 16 * 1024 * 2) do
-        local decoded = decoder(input)
-        local output = {}
+    --local out = fs.open(path, "wb")
+    --for input in io.lines(path, 16 * 1024) do
+    --    local decoded = decoder(input)
+    --    local output = {}
+    --
+    --    -- Read two samples at once and take the average.
+    --    for i = 1, #decoded, 2 do
+    --        local value_1, value_2 = decoded[i], decoded[i + 1]
+    --        output[(i + 1) / 2] = (value_1 + value_2) / 2
+    --    end
+    --
+    --    out.write(encoder(output))
+    --
+    --    sleep(0) -- This program takes a while to run, so we need to make sure we yield.
+    --end
+    --out.close()
 
-        -- Read two samples at once and take the average.
-        for i = 1, #decoded, 2 do
-            local value_1, value_2 = decoded[i], decoded[i + 1]
-            output[(i + 1) / 2] = (value_1 + value_2) / 2
-        end
-
-        out.write(encoder(output))
-
-        sleep(0) -- This program takes a while to run, so we need to make sure we yield.
-    end
-    out.close()
+    --for chunk in io.lines(path, 16 * 1024) do
+    --    local buffer = decoder(chunk)
+    --    print(buffer)
+    --    print("--------")
+    --    print(chunk)
+    --
+    --    while not speaker.playAudio(buffer) do
+    --        os.pullEvent("speaker_audio_empty")
+    --    end
+    --end
 end
 
 --- testes
@@ -105,4 +114,5 @@ for _,v in ipairs(listOfSongs) do
     print(v)
 end
 --shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
-playSong(listOfSongs[1])
+shell.run("speaker play /songs/musioca.dfpwm")
+--playSong(listOfSongs[1])
