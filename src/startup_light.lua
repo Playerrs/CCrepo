@@ -1,4 +1,4 @@
--- By Player_rs and Reavik | v: 1.1
+-- By Player_rs and Reavik | v: 1.2
 -- This code doesn't support Sol System and doesn't download the music
 
 local function _list()
@@ -9,7 +9,14 @@ local function _list()
         for space in l:gmatch("%S+")do
             table.insert(s, space)
         end
-        local c = {name = s[1], url = s[2]}
+        local url
+        if s[2]:sub(1, 1):match("1") then
+            url = "https://drive.google.com/u/0/uc?id="..s[2].."&export=download"
+        else
+            url = s[2]
+        end
+        local c = {name = s[1], url = ""}
+        c.url = url
         table.insert(t, c)
     end
     f.close()
