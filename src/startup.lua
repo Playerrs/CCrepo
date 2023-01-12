@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "1.0"
+local version = "1.1"
 
 -- Utils
 
@@ -23,7 +23,11 @@ end
 
 -- Loaders
 if not fs.exists(rootDir..'songs') then fs.makeDir(rootDir..'songs') end
-if not fs.exists(rootDir..'available.lua') then error("The 'available.lua' archive doesn't exists!") end
+if not fs.exists(rootDir..'available.lua') then
+    local f = fs.open(rootDir..'available.lua', 'w')
+    f.write("name url")
+    f.close()
+end
 
 serialize(version, ".versionMusic") -- Salva a versão do script em um arquivo
 
@@ -57,15 +61,6 @@ local buttons = {}
 
 -- Functions
 -- Speaker
-
-local function _listOfSongs()
-    if not fs.exists(rootDir.."songs") then
-        error([[The "songs" folder doesn't exists!]])
-    end
-    return fs.list(rootDir.."songs")
-end
-
-local listOfSongs = _listOfSongs()
 
 local function downloadSongs(url, name)
     shell.run(string.format('wget %s %s', url, rootDir.."songs/"..name..".dfpwm"))
@@ -113,40 +108,46 @@ local function addButton(handler, name, func, xMin, yMin, xMax, yMax, inactiveCo
     handler:add(name, func, xMin, yMin, xMax, yMax, inactiveColor, activeColor, inactiveText, activeText)
 end
 
+---@param str string
+---@param color number
+local function writeMon(str, color)
+    local x, y = mon.getCursorPos()
+    mon.setCursorPos(3, 2)
+    mon.setBackgroundColor(colors.black)
+    mon.clearLine()
+    local c = mon.getTextColor()
+    mon.setTextColor(color)
+    mon.write(str)
+    mon.setTextColor(c)
+    mon.setCursorPos(x, y)
+end
+
 -- Main
 term.clear()
 term.setCursorPos(1,1)
 term.setTextColor(colors.orange)
---print("Songs = {")
 local xMin, yMin = 3, 3
 local xMax, yMax = 12, 2
 for _,v in ipairs(available) do
-    --xMax = v.name:len()+2
+
     addButton(tpMonitor, v.name, function()
         term.setTextColor(colors.green)
         print("Playing "..v.name)
+        writeMon("Playing "..v.name, colors.green)
         term.setTextColor(colors.orange)
         playSong(v.url)
     end, xMin, yMin, xMax, yMax, colors.blue, nil)
 
     yMin = yMax +2
     yMax = yMin +2
-
-    --print("    "..v.name)
 end
 
---print("}")
---term.write("\n\n> ")
---local input = tostring(read())
---for _, v in ipairs(available)do
---    if v.name == input then
---        print("\nPlaying ".. v.name.."\n")
---        playSong(v.url)
---        break
---    end
---end
 tpMonitor:draw()
-tpMonitor:run()
+
+tpMonitor:run(function()
+    writeMon("Idle", colors.white)
+end)
+
 sleep(10)
 print("\nRebooting...")
 sleep(2)

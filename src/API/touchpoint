@@ -120,13 +120,16 @@ local Button = {
             self.buttonList[name] = nil
         end
     end,
-    run = function(self)
+    run = function(self, func)
+        self:draw()
+        func()
         while true do
-            self:draw()
             local event = {self:handleEvents(os.pullEvent(self.side == "term" and "mouse_click" or "monitor_touch"))}
             if event[1] == "button_click" then
                 self.buttonList[event[2]].func()
             end
+            self:draw()
+            func()
         end
     end,
     handleEvents = function(self, ...)
