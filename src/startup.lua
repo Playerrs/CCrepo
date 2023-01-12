@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "1.1"
+local version = "1.2"
 
 -- Utils
 
@@ -110,13 +110,13 @@ end
 
 ---@param str string
 ---@param color number
-local function writeMon(str, color)
+local function writeMon(str, color, xTo, yTo)
     local x, y = mon.getCursorPos()
-    mon.setCursorPos(3, 2)
+    mon.setCursorPos(xTo or 3, yTo or 2)
     mon.setBackgroundColor(colors.black)
     mon.clearLine()
     local c = mon.getTextColor()
-    mon.setTextColor(color)
+    mon.setTextColor(color or c)
     mon.write(str)
     mon.setTextColor(c)
     mon.setCursorPos(x, y)
@@ -129,14 +129,20 @@ term.setTextColor(colors.orange)
 local xMin, yMin = 3, 3
 local xMax, yMax = 12, 2
 for _,v in ipairs(available) do
-
-    addButton(tpMonitor, v.name, function()
-        term.setTextColor(colors.green)
-        print("Playing "..v.name)
-        writeMon("Playing "..v.name, colors.green)
-        term.setTextColor(colors.orange)
-        playSong(v.url)
-    end, xMin, yMin, xMax, yMax, colors.blue, nil)
+    if v.name == "name" then
+        writeMon("No songs in 'available.lua' file!", colors.red)
+        sleep(100)
+        os.reboot()
+    else
+        addButton(tpMonitor, v.name, function()
+            term.setTextColor(colors.green)
+            print("Playing "..v.name)
+            writeMon("Playing "..v.name, colors.green)
+            writeMon("By: Player_rs, Reavik", colors.white, 1, H)
+            term.setTextColor(colors.orange)
+            playSong(v.url)
+        end, xMin, yMin, xMax, yMax, colors.blue, nil)
+        end
 
     yMin = yMax +2
     yMax = yMin +2
@@ -146,6 +152,7 @@ tpMonitor:draw()
 
 tpMonitor:run(function()
     writeMon("Idle", colors.white)
+    writeMon("By: Player_rs, Reavik", colors.white, 1, H)
 end)
 
 sleep(10)
