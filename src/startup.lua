@@ -32,11 +32,6 @@ local function unserialize(name)
     return data
 end
 
----@param name string
-local function _checkDownloaded(name)
-
-end
-
 local function _listOfSongs()
     if not fs.exists(rootDir.."songs") then
         error([[The "songs" folder doesn't exists!]])
@@ -62,9 +57,9 @@ if not fs.exists(rootDir..'songs') then fs.makeDir(rootDir..'songs') end
 
 serialize(version, ".versionMusic") -- Salva a versão do script em um arquivo
 
-os.loadAPI('/API/Manager.lua')      -- API
-local api = Manager                 -- API
-local Menu = require('/API/Menus')
+--os.loadAPI('/API/Manager.lua')      -- API
+--local api = Manager                 -- API
+--local Menu = require('/API/Menus')
 local dfpwm = require("cc.audio.dfpwm")
 local encoder = dfpwm.make_encoder()
 local decoder = dfpwm.make_decoder()
@@ -98,6 +93,7 @@ local function playSong(songName)
 
         sleep(0) -- This program takes a while to run, so we need to make sure we yield.
     end
+    out.close()
 end
 
 --- testes
@@ -108,5 +104,5 @@ end
 for _,v in ipairs(listOfSongs) do
     print(v)
 end
-
-playSong(listOfSongs[1])
+shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
+--playSong(listOfSongs[1])
