@@ -1,67 +1,35 @@
 -- By Player_rs and Reavik
 
-
-local version = "1.0"
-
--- Utils
-
-local rootDir = ...
-if rootDir == nil then
-    rootDir = ""
-end
-
----@param data string
----@param name string
-local function serialize(data, name)
-    if not fs.exists(rootDir..'data') then
-        fs.makeDir(rootDir..'data')
-    end
-    local f = fs.open(rootDir..'data/'..name, 'w')
-    f.write(textutils.serialize(data))
-    f.close()
-end
-
----@param name string
-local function unserialize(name)
-    local data
-    if fs.exists(name) then
-        local f = fs.open(name, 'r')
-        data = textutils.unserialize(f.readAll())
-        f.close()
-    end
-    return data
-end
-
 local function _listOfSongs()
-    if not fs.exists(rootDir.."songs") then
+    if not fs.exists("songs") then
         error([[The "songs" folder doesn't exists!]])
     end
-    --local folder = fs.list(rootDir.."songs")
-    --for k, v in pairs(folder)do
-    --    print(k,v)
-    --end
-    return fs.list(rootDir.."songs")
+    return fs.list("songs")
 end
 
----@param url string
----@param name string
 local function downloadSongs(url, name)
-    local path = rootDir.."songs/"..name..".dfpwm"
-    shell.run(string.format('wget %s %s', url, path))
+    shell.run(string.format('wget %s %s', url, "songs/"..name..".dfpwm"))
 end
 
-
+local function _list()
+    local f = fs.open('list', 'r')
+    local t = {}
+    for l in f.readLine do
+        local s = {}
+        for space in l:gmatch("%S+")do
+            table.insert(s, space)
+        end
+        local c = {name = s[1], url = "https://drive.google.com/u/0/uc?id="..s[2].."&export=download"}
+        table.insert(t, c)
+    end
+    f.close()
+    return t
+end
 
 -- Loaders
-if not fs.exists(rootDir..'songs') then fs.makeDir(rootDir..'songs') end
+if not fs.exists('songs') then fs.makeDir('songs') end
 
-serialize(version, ".versionMusic") -- Salva a versão do script em um arquivo
-
---os.loadAPI('/API/Manager.lua')      -- API
---local api = Manager                 -- API
---local Menu = require('/API/Menus')
 local dfpwm = require("cc.audio.dfpwm")
-local encoder = dfpwm.make_encoder()
 local decoder = dfpwm.make_decoder()
 
 local speaker = peripheral.find("speaker") -- Speakers
@@ -70,8 +38,10 @@ local listOfSongs = _listOfSongs()
 
 ---@param songName string
 local function playSong(songName)
-    local path = rootDir.."songs/"..songName
-
+    local path = "songs/"..songName
+    if not fs.exists(path) then
+        error("I don't have this song :V")
+    end
     for input in io.lines(path, 16 * 1024) do
         local decoded = decoder(input)
         while not speaker.playAudio(decoded) do
@@ -83,17 +53,24 @@ local function playSong(songName)
 end
 
 --- testes
-if not fs.exists('songs/musioca.dfpwm') then
-    downloadSongs("https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download", "musioca")
+if not fs.exists('list') then error("The 'list' archive doesn't exists!") end
+local downloaded = false
+for _,v in pairs(_list()) do
+    if not fs.exists("songs/"..v.name..".dfpwm") then
+        downloadSongs(v.url, v.name)
+        downloaded = true
+    end
 end
-
-if not fs.exists('songs/musioca2.dfpwm') then
-    downloadSongs("https://drive.google.com/u/0/uc?id=1LPQhHAwzd_Nz1_PEnSK0HY0cxhJMDu5p&export=download", "musioca2")
-end
-
+if downloaded then os.reboot() end
+--- main
+term.clear()
+term.setCursorPos(1,1)
+term.setTextColor(colors.orange)
+print("Songs = {")
 for _,v in ipairs(listOfSongs) do
-    print(v)
+    print("    "..v)
 end
---shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
-playSong("musioca2.dfpwm")
-
+print("}")
+term.write("\n\n> ")
+playSong(read()..".dfpwm")
+os.reboot()
