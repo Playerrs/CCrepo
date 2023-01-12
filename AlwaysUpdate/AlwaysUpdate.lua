@@ -1,5 +1,5 @@
 -- Updater
-local args = ...
+local args = {...}
 local item = args[1]
 local name = args[2]
 
