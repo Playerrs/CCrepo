@@ -104,5 +104,5 @@ end
 for _,v in ipairs(listOfSongs) do
     print(v)
 end
-shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
---playSong(listOfSongs[1])
+--shell.run("speaker play https://drive.google.com/u/0/uc?id=1uKuRgIOe07ngdMuznXZBbqPRbdLaZ7Gf&export=download")
+playSong(listOfSongs[1])
