@@ -1,4 +1,5 @@
--- By Player_rs and Reavik
+-- By Player_rs and Reavik | v: 1.1
+-- This code doesn't support Sol System and doesn't download the music
 
 local function _list()
     local f = fs.open('available.lua', 'r')
@@ -43,6 +44,7 @@ term.write("\n\n> ")
 local input = tostring(read())
 for _, v in ipairs(available)do
     if v.name == input then
+        print("\nPlaying ".. v.name.."\n")
         playSong(v.url)
         break
     end
