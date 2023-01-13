@@ -8,7 +8,7 @@ local function _finder(semiURL, file)
             print(l)
         end
     end
-    print(string.find(l, 'class src="'..semiURL))
+    print(string.find(f.readAll(), 'class src="'..semiURL))
 end
 
 
