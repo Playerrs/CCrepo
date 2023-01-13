@@ -4,10 +4,11 @@ local args = {...}
 local function _finder(semiURL, file)
     local f = fs.open(file, 'r')
     for l in f.readLine do
-        if string.find(l, "class src=") then
+        if string.find(l, 'class src="'..semiURL) then
             print(l)
         end
     end
+    print(string.find(l, 'class src="'..semiURL))
 end
 
 
@@ -34,12 +35,14 @@ elseif args[1] == "dw" then
     print(shell.run("wget "..item.." "..name))
 
 elseif args[1] == "solve" then
-    local item = args[2]
+    local url = args[2]
+    local file = args[3]
 
-    local f = fs.open(item, 'r')
-    for l in f.readLine do
-        if string.find() then
-
-        end
-    end
+    _finder(url, file)
+    --local f = fs.open(item, 'r')
+    --for l in f.readLine do
+    --    if string.find() then
+    --
+    --    end
+    --end
 end
