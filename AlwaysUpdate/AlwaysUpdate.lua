@@ -1,7 +1,17 @@
 -- Updater
 local args = {...}
 
-if args[1] == "dw" then
+local function _finder(semiURL, file)
+    local f = fs.open(file, 'r')
+    for l in f.readLine do
+        if string.find(l, "class src=") then
+            print(l)
+        end
+    end
+end
+
+
+if args[1] == "file" then
     local item = args[2]
     local name = args[3]
 
@@ -18,8 +28,18 @@ if args[1] == "dw" then
         end
     end
 
-else
+elseif args[1] == "dw" then
     local item = args[2]
     local name = args[3]
     print(shell.run("wget "..item.." "..name))
+
+elseif args[1] == "solve" then
+    local item = args[2]
+
+    local f = fs.open(item, 'r')
+    for l in f.readLine do
+        if string.find() then
+
+        end
+    end
 end
