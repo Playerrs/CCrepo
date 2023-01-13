@@ -51,7 +51,7 @@ local decoder = dfpwm.make_decoder()
 local speaker = peripheral.find("speaker") -- Speakers
 
 local listOfSongs = _listOfSongs()
-local available = _list()
+--local available = _list()
 
 ---@param songName string
 local function playSong(songName)
@@ -81,8 +81,18 @@ elseif args[1] == "play" then
 elseif args[1] == "download" then
     downloadSongs(args[2], args[3])
 else
-    local c = term.getTextColor()
-    term.setTextColor(colors.red)
-    print("["..args[1].."] is not a command!")
-    term.setTextColor(c)
+    if args[1] then
+        local c = term.getTextColor()
+        term.setTextColor(colors.red)
+        print("["..args[1].."] is not a command!")
+        term.setTextColor(c)
+    else
+        local c = term.getTextColor()
+        term.setTextColor(colors.green)
+        print("Uses: ")
+        print([[[PROGRAM] play <song>
+         [PROGRAM] download <URL> <NAME>
+         [PROGRAM] list]])
+        term.setTextColor(c)
+    end
 end
