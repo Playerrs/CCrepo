@@ -4,13 +4,16 @@
 -- [PROGRAM] download <URL> <NAME>
 -- [PROGRAM] list
 
+local prefix = ""
+
+
 -- Utils
 
 local function _listOfSongs()
-    if not fs.exists("songs") then
+    if not fs.exists(prefix.."songs") then
         error([[The "songs" folder doesn't exists!]])
     end
-    return fs.list("songs")
+    return fs.list(prefix.."songs")
 end
 
 ---@param url string
@@ -18,9 +21,9 @@ end
 local function downloadSongs(url, name)
     local path
     if string.find(name, ".dfpwm") then
-        path = "songs/"..name
+        path = prefix.."songs/"..name
     else
-        path = "songs/"..name..".dfpwm"
+        path = prefix.."songs/"..name..".dfpwm"
     end
     shell.run(string.format('wget %s %s', url, path))
 end
@@ -41,7 +44,7 @@ local function _list()
 end
 
 -- Loaders
-if not fs.exists('songs') then fs.makeDir('songs') end
+if not fs.exists(prefix..'songs') then fs.makeDir(prefix..'songs') end
 --if not fs.exists('available.lua') then error("The 'available.lua' archive doesn't exists!") end
 
 local dfpwm = require("cc.audio.dfpwm")
@@ -49,13 +52,14 @@ local encoder = dfpwm.make_encoder()
 local decoder = dfpwm.make_decoder()
 
 local speaker = peripheral.find("speaker") -- Speakers
+if speaker == nil then error("Without Speaker!") end
 
 local listOfSongs = _listOfSongs()
 --local available = _list()
 
 ---@param songName string
 local function playSong(songName)
-    local path = "songs/"..songName
+    local path = prefix.."songs/"..songName..".dfpwm"
     if not fs.exists(path) then
         error("I don't have this song :V")
     end
@@ -77,7 +81,7 @@ if args[1] == "list" then
     end
     print("}\n")
 elseif args[1] == "play" then
-    playSong(args[2]..".dfpwm")
+    playSong(args[2])
 elseif args[1] == "download" then
     downloadSongs(args[2], args[3])
 else
@@ -91,8 +95,8 @@ else
         term.setTextColor(colors.green)
         print("Uses: ")
         print([[[PROGRAM] play <song>
-         [PROGRAM] download <URL> <NAME>
-         [PROGRAM] list]])
+[PROGRAM] download <URL> <NAME>
+[PROGRAM] list]])
         term.setTextColor(c)
     end
 end
