@@ -37,8 +37,15 @@ local function findItem(str, table)
     return bool, out
 end
 
--- Main
+local function _downloadList()
+    if not fs.exists("EteriumSky") then
+        fs.makeDir("EteriumSky")
+    end
+    shell.run("wget https://raw.githubusercontent.com/Playerrs/CCrepo/master/EteriumLoja/EteriumTable.lua EteriumSky/priceTable.lua")
+end
 
+-- Main
+if not fs.exists("EteriumSky/priceTable.lua") then _downloadList() end
 local tabela = loadTabela()
 
 while true do
