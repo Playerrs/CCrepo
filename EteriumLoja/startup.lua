@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.3
+-- By Reavik and Player_rs V1.4
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -47,6 +47,7 @@ end
 -- Main
 if not fs.exists("EteriumSky/priceTable.lua") then _downloadList() end
 local tabela = loadTabela()
+print("Tudo certo e funcionando!\n["..nameBot.."]")
 
 while true do
     local e, player, msg = os.pullEvent("chat")
@@ -54,13 +55,18 @@ while true do
     msg = (split_string[1]):lower()
 
     if msg == "preço" or msg == "preco" or msg == "price" then
-        local item = split_string[2]:lower()
-
-        local stats, result = findItem(item, tabela)
+        local item
+        local stats, result
+        if split_string[2] then
+            item = split_string[2]:lower()
+            stats, result = findItem(item, tabela)
+        else
+            sendMessage("Você precisa passar um item para ser pesquisado! Ex: preço Insanium", player)
+        end
 
         if stats then
             sendMessage(("[Tier %s] [%s]: %s"):format(result.tier, result.name, result.info), player)
-        else
+        elseif (not stats) and (item ~= nil) then
             sendMessage(("O item que você procurou não foi encontrado [%s]"):format(item), player)
         end
     end
