@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "1.21"
+local version = "1.3"
 
 -- Utils
 
@@ -33,7 +33,7 @@ serialize(version, ".versionMusic") -- Salva a versão do script em um arquivo
 
 if not fs.exists(rootDir.."API/touchpoint") then
     print("Installing Touchpoint by Lyqyd")
-    shell.run("wget https://raw.githubusercontent.com/Playerrs/CC-Music-Player/master/src/API/touchpoint "..rootDir.."API/touchpoint")
+    shell.run("wget https://raw.githubusercontent.com/Playerrs/CCrepo/master/MusicPlayer/API/touchpoint "..rootDir.."API/touchpoint")
     os.reboot()
 end
 
