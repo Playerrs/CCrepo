@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1
+-- By Reavik and Player_rs V1.2
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -179,7 +179,7 @@ local tablet = {
     {name = "Pladium", info = "160000/16un - SUGERIDO: 180000/16un", tier = 4},
     {name = "Advanced tier Installer", info = "50000/un - SUGERIDO: 100000/un", tier = 4},
     {name = "Applied Press", info = "30000/un - SUGERIDO: 50000/un", tier = 4},
-    {name = "Imperium "= "400000/pack - SUGERIDO: 500000/pack", tier = 4},
+    {name = "Imperium", info = "400000/pack - SUGERIDO: 500000/pack", tier = 4},
     {name = "Seeds tier 4", info = "200000/un - SUGERIDO: 250000/un\nname = POWAH > 400000/un - SUGERIDO: 500000/un\nname = Mobs > 250000/un - SUGERIDO: 400000/un", tier = 4},
     {name = "Plutonium", info = "500000/inv ~ Pollonium - 1000000/inv", tier = 5},
     {name = "Ultimate tier Instaler", info = "800000/un", tier = 5},
