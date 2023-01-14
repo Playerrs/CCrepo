@@ -26,12 +26,13 @@ end
 
 local function findItem(str, table)
     local bool, out = false
-    for _, v in pairs(table) do --- Arrumar
-        if v[str] then
+
+    for _, v in pairs(table) do
+        if string.find(v.name:lower(), str) then
             bool = true
             out = v
         end
-    end                         --- Arrumar
+    end
 
     return bool, out
 end
@@ -44,19 +45,16 @@ while true do
     local e, player, msg = os.pullEvent("chat")
     local split_string = Split(msg, " ")
     msg = (split_string[1]):lower()
-    local item = split_string[2]:lower()
-
-    local message = "Teste"
-
 
     if msg == "preço" or msg == "preco" or msg == "price" then
+        local item = split_string[2]:lower()
+
         local stats, result = findItem(item, tabela)
 
         if stats then
-
+            sendMessage(("[Tier %s] [%s]: %s"):format(result.tier, result.name, result.info))
         else
             sendMessage(("O item que você procurou não foi encontrado [%s]"):format(item), player)
         end
     end
-
 end
