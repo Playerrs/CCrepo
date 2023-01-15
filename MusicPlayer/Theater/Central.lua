@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "0.2"
+local version = "0.3"
 
 -- Utils
 
@@ -54,8 +54,13 @@ for _, side in pairs({ 'back', 'top', 'left', 'right', 'bottom' }) do
     end
 end
 
+-- Modem
+local _modemRange = 80
+local _modemChannel = 25565
+
 local modem = peripheral.find('modem')
-modem.open(25565)
+modem.open(_modemChannel)
+
 
 local W, H = mon.getSize()
 mon.setTextScale(0.5)
@@ -104,10 +109,10 @@ end
 
 ---@param songName string
 local function playSong(songUrl)
-    modem.transmit(25565, 70, songUrl)
+    modem.transmit(_modemChannel, _modemRange, songUrl)
     --shell.run("speaker play "..songUrl)
     --local e, p, channel, replyChannel, message, distance = os.pullEvent("modem_message")
-    --print(waitFinish())
+    print(waitFinish())
     term.setTextColor(colors.red)
     print("Music ended!")
     term.setTextColor(colors.white)
@@ -151,11 +156,13 @@ for _,v in ipairs(available) do
     else
         addButton(tpMonitor, v.name, function()
             tpMonitor:toggleButton(v.name)
+
             term.setTextColor(colors.green)
             print("Playing "..v.name)
             writeMon("Playing "..v.name, colors.green)
             writeMon("By: Player_rs, Reavik", colors.white, 1, H)
             term.setTextColor(colors.orange)
+
             playSong(v.url)
         end, xMin, yMin, xMax, yMax, colors.blue)
     end
@@ -166,10 +173,19 @@ end
 
 
 addButton(tpMonitor, "STOP", function()
-    modem.transmit(25565, 40, "STOP")
-    print(shell.run("speaker stop"))
+    modem.transmit(_modemChannel, _modemRange, "STOP")
+    --print(shell.run("speaker stop"))
+    print("Speaker Stopped")
 end, W/2, 4, (W/2)+12, 6, colors.red)
 
+local function waitStop()
+    local event, button = tpMonitor:handleEvents(os.pullEvent())
+    if (event == "button_click") and (button == "STOP") then
+        return
+    else
+        waitStop()
+    end
+end
 
 
 local function runtime()
@@ -181,8 +197,10 @@ local function runtime()
         if event == "button_click" then
             local function callEvent()
                 tpMonitor.buttonList[button].func()
+                --waitFinish()
+                tpMonitor:toggleButton(button)
             end
-            parallel.waitForAny(callEvent, waitFinish)
+            parallel.waitForAny(callEvent, waitStop)
         end
         tpMonitor:draw()
         writeMon("Idle", colors.white)
