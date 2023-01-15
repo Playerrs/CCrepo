@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.8.1
+-- By Reavik and Player_rs V1.9
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -51,9 +51,9 @@ print("Tudo certo e funcionando!\n["..nameBot.."]")
 
 while true do
     local e, player, msg = os.pullEvent("chat")
+    print("["..player.."]: "..msg)
     local split_string = Split(msg, " ")
     msg = (split_string[1]):lower()
-
     if msg == "preço" or msg == "preco" or msg == "price" then
         local item
         local stats, result
@@ -71,10 +71,10 @@ while true do
         end
     end
     if msg == "sky" then
-        sendMessage("-------------[Eterium Sky]------------\nExiste um delay de 1s entre um comando e outro\nAss: Reavik, Player_rs", player)
+        sendMessage("------------------ [Eterium Sky]\nExiste um delay de 1s entre um comando e outro\nAss: Reavik, Player_rs", player)
     end
     if msg == "help" then
-        sendMessage("------------[Eterium Sky]------------\nDigite no chat local os comandos a seguir sem usar /\nprice\ncalc\nsky\nhelp", player)
+        sendMessage("----------------- [Eterium Sky]\nDigite no chat local os comandos a seguir sem usar /\nprice\ncalc\nsky\nhelp", player)
     end
     -- split_string[1] = calc
     -- split_string[2] = int
@@ -84,24 +84,48 @@ while true do
         if split_string[2] then
             item = split_string[2]:lower()
             stats, result = findItem(item, tabela)
-
+            local error = "[X] Você deve digitar apenas numeros e parametros matematicos"
         if split_string[3] == "+" then
-            sendMessage("A soma de "..split_string[2].." mais "..split_string[4].." é ["..tonumber(split_string[2]) + tonumber(split_string[4]).."]", player)
+            if tonumber(split_string[2]) and tonumber(split_string[4]) then
+                sendMessage("A soma de "..split_string[2].." mais "..split_string[4].." é ["..tonumber(split_string[2]) + tonumber(split_string[4]).."]", player)
+            else
+                sendMessage(error,player)
+            end
         end
         if split_string[3] == "-" then
-            sendMessage("A subitração de "..split_string[4].." de "..split_string[2].." é ["..tonumber(split_string[2]) - tonumber(split_string[4]).."]", player)
+            if tonumber(split_string[2]) and tonumber(split_string[4]) then
+                sendMessage("A subitração de "..split_string[4].." de "..split_string[2].." é ["..tonumber(split_string[2]) - tonumber(split_string[4]).."]", player)
+            else
+                sendMessage(error,player)
+            end
         end
-        if split_string[3] == "/" or split_string[3] == "%" then
-            sendMessage("A divisão de "..split_string[2].." por "..split_string[4].." é ["..tonumber(split_string[2]) / tonumber(split_string[4]).."]", player)
+        if tonumber(split_string[2]) and tonumber(split_string[4]) then
+            if split_string[3] == "/" or split_string[3] == "%" then
+                sendMessage("A divisão de "..split_string[2].." por "..split_string[4].." é ["..tonumber(split_string[2]) / tonumber(split_string[4]).."]", player)
+            else
+                sendMessage(error,player)
+            end
         end
         if split_string[3] == "*" or split_string[3] == "x" then
-            sendMessage("A divisão de "..split_string[2].." por "..split_string[4].." é ["..tonumber(split_string[2]) * tonumber(split_string[4]).."]", player)
+            if tonumber(split_string[2]) and tonumber(split_string[4]) then
+                sendMessage("A divisão de "..split_string[2].." por "..split_string[4].." é ["..tonumber(split_string[2]) * tonumber(split_string[4]).."]", player)
+            else
+                sendMessage(error,player)
+            end
         end
         if split_string[3] == "^" then
-            sendMessage("A potência de "..split_string[2].." elevado "..split_string[4].." é ["..tonumber(split_string[2]) ^ tonumber(split_string[4]).."]", player)
+            if tonumber(split_string[2]) and tonumber(split_string[4]) then
+                sendMessage("A potência de "..split_string[2].." elevado "..split_string[4].." é ["..tonumber(split_string[2]) ^ tonumber(split_string[4]).."]", player)
+            else
+                sendMessage(error,player)
+            end
         end
         if split_string[2] == "v" then
-            sendMessage("A raiz quadrada de "..split_string[3].." é ["..math.sqrt(tonumber(split_string[3])).."]", player)
+            if tonumber(split_string[3]) then
+                sendMessage("A raiz quadrada de "..split_string[3].." é ["..math.sqrt(tonumber(split_string[3])).."]", player)
+            else
+                sendMessage(error,player)
+            end
         end
         else
             sendMessage("Os parametros validos para a calculadora são:\n+ Soma\n- Subtração\n/ % Divisão\n* x Multilicação\n^ Potência\nv Raiz quadrada", player)
