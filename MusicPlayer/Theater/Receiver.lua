@@ -1,3 +1,4 @@
+-- V 0.2
 local modem = peripheral.find("modem")
 modem.open(25565)
 
@@ -21,7 +22,7 @@ end
 
 local function runtime()
     while true do
-        paralel.waitForAny(play, waitStop)
+        parallel.waitForAny(play, waitStop)
     end
 end
 
