@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "0.1"
+local version = "0.2"
 
 -- Utils
 
@@ -150,7 +150,7 @@ for _,v in ipairs(available) do
         os.reboot()
     else
         addButton(tpMonitor, v.name, function()
-            t:toggleButton(v.name)
+            tpMonitor:toggleButton(v.name)
             term.setTextColor(colors.green)
             print("Playing "..v.name)
             writeMon("Playing "..v.name, colors.green)
@@ -180,7 +180,7 @@ local function runtime()
         local event, button = tpMonitor:handleEvents(os.pullEvent())
         if event == "button_click" then
             local function callEvent()
-                tpMonitor.buttonList[event[2]].func()
+                tpMonitor.buttonList[button].func()
             end
             parallel.waitForAny(callEvent, waitFinish)
         end
