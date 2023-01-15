@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "0.3"
+local version = "0.4"
 
 -- Utils
 
@@ -176,7 +176,7 @@ addButton(tpMonitor, "STOP", function()
     modem.transmit(_modemChannel, _modemRange, "STOP")
     --print(shell.run("speaker stop"))
     print("Speaker Stopped")
-end, W/2, 4, (W/2)+12, 6, colors.red)
+end, W/2, 4, (W/2)+12, 6, colors.red, colors.red)
 
 local function waitStop()
     local event, button = tpMonitor:handleEvents(os.pullEvent())
@@ -198,9 +198,9 @@ local function runtime()
             local function callEvent()
                 tpMonitor.buttonList[button].func()
                 --waitFinish()
-                tpMonitor:toggleButton(button)
             end
             parallel.waitForAny(callEvent, waitStop)
+            tpMonitor:toggleButton(button)
         end
         tpMonitor:draw()
         writeMon("Idle", colors.white)
