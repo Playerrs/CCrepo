@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.5
+-- By Reavik and Player_rs V1.6
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -74,18 +74,18 @@ while true do
         sendMessage("-----------------[Eterium Sky]-----------------\n[price nomeDoItem] = mostra o preço do item na tabela do servidor\r[calc numero [+-/*] numero] = funciona como uma calculadora\r[sky help] = mostra esse menu de ajuda")
     end
     if msg == "calc" or msg == "c" then
-        cb.sendMessageToPlayer("1 "..split_string[1].."2 "..split_string[2].."3 "..split_string[3].."4 "..split_string[4], "Reavik", nameBot)
+
         if split_string[3] == "+" then
-            sendMessage(nameBot.." "..split_string[2].."+"..split_string[4].." = "..tonumber(split_string[2]) + tonumber(split_string[4]))
+            sendMessage(split_string[2].."+"..split_string[4].." = "..tonumber(split_string[2]) + tonumber(split_string[4]), player)
         end
         if split_string[3] == "-" then
-            sendMessage(nameBot.." "..split_string[2].."-"..split_string[4].." = "..tonumber(split_string[2]) - tonumber(split_string[4]))
+            sendMessage(split_string[2].."-"..split_string[4].." = "..tonumber(split_string[2]) - tonumber(split_string[4]), player)
         end
-        if split_string[3] == "/" then
-            sendMessage(nameBot.." "..split_string[2].."/"..split_string[4].." = "..tonumber(split_string[2]) / tonumber(split_string[4]))
+        if split_string[3] == "/" or split_string[3] == "%" then
+            sendMessage(split_string[2].."/"..split_string[4].." = "..tonumber(split_string[2]) / tonumber(split_string[4]), player)
         end
-        if split_string[3] == "*"then
-            sendMessage(nameBot.." "..split_string[2].."*"..split_string[4].." = "..tonumber(split_string[2]) * tonumber(split_string[4]))
+        if split_string[3] == "*" or split_string[3] == "x" then
+            sendMessage(split_string[2].."*"..split_string[4].." = "..tonumber(split_string[2]) * tonumber(split_string[4]), player)
         end
     end
 end
