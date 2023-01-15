@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.6
+-- By Reavik and Player_rs V1.5
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -65,7 +65,7 @@ while true do
         end
 
         if stats then
-            sendMessage(("[Tier %s] [%s]:\r%s"):format(result.tier, result.name, result.info),player)
+            sendMessage(("[Tier %s] [%s]:\n %s"):format(result.tier, result.name, result.info),player)
         else
             sendMessage(("[%s] não foi encontrado na tabela\nTente pesquisar por outro nome\nOu calcule o proço baseado nos item usado para o craft\nUse \"Sky help\" para mais informações"):format(item), player)
         end
@@ -84,8 +84,14 @@ while true do
         if split_string[3] == "/" or split_string[3] == "%" then
             sendMessage(split_string[2].."/"..split_string[4].." = "..tonumber(split_string[2]) / tonumber(split_string[4]), player)
         end
-        if split_string[3] == "*" or split_string[3] == "x" then
+        if split_string[3] == "*" then
             sendMessage(split_string[2].."*"..split_string[4].." = "..tonumber(split_string[2]) * tonumber(split_string[4]), player)
+        end
+        if split_string[3] == "^" then
+            sendMessage(split_string[2].."^"..split_string[4].." = "..tonumber(split_string[2]) ^ tonumber(split_string[4]), player)
+        end
+        if split_string[3] == "v" then
+            sendMessage(split_string[2].."V"..split_string[4].." = "..math.sqrt(tonumber(split_string[2])), player)
         end
     end
 end
