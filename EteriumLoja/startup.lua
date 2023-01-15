@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.8
+-- By Reavik and Player_rs V1.8.1
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -71,10 +71,10 @@ while true do
         end
     end
     if msg == "sky" then
-        sendMessage("------------------[Eterium Sky]-----------------\nExiste um delay de 1s entre um comando e outro\rAss: Reavik, Player_rs", player)
+        sendMessage("-------------[Eterium Sky]------------\nExiste um delay de 1s entre um comando e outro\nAss: Reavik, Player_rs", player)
     end
     if msg == "help" then
-        sendMessage("-----------------[Eterium Sky]-----------------\nDigite no chat local os comandos a seguir sem usar /\nprice\ncalc\nsky\nhelp", player)
+        sendMessage("------------[Eterium Sky]------------\nDigite no chat local os comandos a seguir sem usar /\nprice\ncalc\nsky\nhelp", player)
     end
     -- split_string[1] = calc
     -- split_string[2] = int
@@ -104,7 +104,7 @@ while true do
             sendMessage("A raiz quadrada de "..split_string[3].." é ["..math.sqrt(tonumber(split_string[3])).."]", player)
         end
         else
-            sendMessage("Os parametros validos para a calculadora são:\n+ Soma\n- Subtração\n/ % Divisão\n*  Multilicação\n^ Potência\nv Raiz quadrada", player)
+            sendMessage("Os parametros validos para a calculadora são:\n+ Soma\n- Subtração\n/ % Divisão\n* x Multilicação\n^ Potência\nv Raiz quadrada", player)
         end
         sleep(1)
     end
