@@ -1,7 +1,7 @@
 -- By Player_rs and Reavik
 -- This code support Sol System and doesn't download the music
 
-local version = "1.21"
+local version = "0.1"
 
 -- Utils
 
@@ -28,11 +28,12 @@ if not fs.exists(rootDir..'available.lua') then
     f.close()
 end
 
-serialize(version, ".versionMusic") -- Salva a versão do script em um arquivo
+serialize(version, ".versionTheater") -- Salva a versão do script em um arquivo
 
 if not fs.exists(rootDir.."API/touchpoint") then
     print("Installing Touchpoint by Lyqyd")
-    shell.run("wget https://raw.githubusercontent.com/Playerrs/CC-Music-Player/master/src/API/touchpoint "..rootDir.."API/touchpoint")
+    shell.run("wget https://raw.githubusercontent.com/Playerrs/CCrepo/master/MusicPlayer/API/touchpoint "..rootDir.."API/touchpoint")
+    sleep(3)
     os.reboot()
 end
 
@@ -53,7 +54,7 @@ for _, side in pairs({ 'back', 'top', 'left', 'right', 'bottom' }) do
     end
 end
 
-local modem = peripheral.wrap('back')
+local modem = peripheral.find('modem')
 modem.open(25565)
 
 local W, H = mon.getSize()
@@ -106,7 +107,7 @@ local function playSong(songUrl)
     modem.transmit(25565, 70, songUrl)
     --shell.run("speaker play "..songUrl)
     --local e, p, channel, replyChannel, message, distance = os.pullEvent("modem_message")
-    print(waitFinish())
+    --print(waitFinish())
     term.setTextColor(colors.red)
     print("Music ended!")
     term.setTextColor(colors.white)
@@ -149,6 +150,7 @@ for _,v in ipairs(available) do
         os.reboot()
     else
         addButton(tpMonitor, v.name, function()
+            t:toggleButton(v.name)
             term.setTextColor(colors.green)
             print("Playing "..v.name)
             writeMon("Playing "..v.name, colors.green)
@@ -162,18 +164,36 @@ for _,v in ipairs(available) do
     yMax = yMin +2
 end
 
---addButton(tpMonitor, "STOP", function()
---    print(shell.run("speaker stop"))
---end, W/2, 4, (W/2)+12, 6, colors.red)
 
-tpMonitor:draw()
+addButton(tpMonitor, "STOP", function()
+    modem.transmit(25565, 40, "STOP")
+    print(shell.run("speaker stop"))
+end, W/2, 4, (W/2)+12, 6, colors.red)
 
-tpMonitor:run(function()
+
+
+local function runtime()
+    tpMonitor:draw()
     writeMon("Idle", colors.white)
     writeMon("By: Player_rs, Reavik", colors.white, 1, H)
-end)
+    while true do
+        local event, button = tpMonitor:handleEvents(os.pullEvent())
+        if event == "button_click" then
+            local function callEvent()
+                tpMonitor.buttonList[event[2]].func()
+            end
+            parallel.waitForAny(callEvent, waitFinish)
+        end
+        tpMonitor:draw()
+        writeMon("Idle", colors.white)
+        writeMon("By: Player_rs, Reavik", colors.white, 1, H)
+    end
+end
 
-sleep(10)
-print("\nRebooting...")
-sleep(2)
-os.reboot()
+
+runtime()
+
+--tpMonitor:run(function()
+--    writeMon("Idle", colors.white)
+--    writeMon("By: Player_rs, Reavik", colors.white, 1, H)
+--end)
