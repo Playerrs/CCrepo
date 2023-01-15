@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.4
+-- By Reavik and Player_rs V1.5
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -61,13 +61,31 @@ while true do
             item = split_string[2]:lower()
             stats, result = findItem(item, tabela)
         else
-            sendMessage("Você precisa passar um item para ser pesquisado! Ex: preço Insanium", player)
+            sendMessage("Para mais informações digit \"sky\" ou \"help\" no chat", player)
         end
 
         if stats then
-            sendMessage(("[Tier %s] [%s]: %s"):format(result.tier, result.name, result.info), player)
-        elseif (not stats) and (item ~= nil) then
-            sendMessage(("O item que você procurou não foi encontrado [%s]"):format(item), player)
+            sendMessage(("[Tier %s] [%s]:\r%s"):format(result.tier, result.name, result.info),player)
+        else
+            sendMessage(("[%s] não foi encontrado na tabela\nTente pesquisar por outro nome\nOu calcule o proço baseado nos item usado para o craft\nUse \"Sky help\" para mais informações"):format(item), player)
+        end
+    end
+    if msg == "sky" or msg == "help" then
+        sendMessage("-----------------[Eterium Sky]-----------------\n[price nomeDoItem] = mostra o preço do item na tabela do servidor\r[calc numero [+-/*] numero] = funciona como uma calculadora\r[sky help] = mostra esse menu de ajuda")
+    end
+    if msg == "calc" or msg == "c" then
+        cb.sendMessageToPlayer("1 "..split_string[1].."2 "..split_string[2].."3 "..split_string[3].."4 "..split_string[4], "Reavik", nameBot)
+        if split_string[3] == "+" then
+            sendMessage(nameBot.." "..split_string[2].."+"..split_string[4].." = "..tonumber(split_string[2]) + tonumber(split_string[4]))
+        end
+        if split_string[3] == "-" then
+            sendMessage(nameBot.." "..split_string[2].."-"..split_string[4].." = "..tonumber(split_string[2]) - tonumber(split_string[4]))
+        end
+        if split_string[3] == "/" then
+            sendMessage(nameBot.." "..split_string[2].."/"..split_string[4].." = "..tonumber(split_string[2]) / tonumber(split_string[4]))
+        end
+        if split_string[3] == "*"then
+            sendMessage(nameBot.." "..split_string[2].."*"..split_string[4].." = "..tonumber(split_string[2]) * tonumber(split_string[4]))
         end
     end
 end
