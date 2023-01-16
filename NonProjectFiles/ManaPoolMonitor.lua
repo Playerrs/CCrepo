@@ -43,7 +43,7 @@ while true do
     local percent = regra3(var1, var2)*100
     printar(4, var1.." / "..var2)
     printar(5, string.format("%0.0f", percent).."%")
-    printar(7, "Pools: "..string.format("%0.2f", var1/1000000))
+    printar(7, "Pools: "..string.format("%0.1f", var1/var2))
 
     sleep(0.6)
 end
