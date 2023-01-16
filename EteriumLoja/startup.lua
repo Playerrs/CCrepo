@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V1.9
+-- By Reavik and Player_rs V2.1
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -25,16 +25,17 @@ local function sendMessage(msg, player)
 end
 
 local function findItem(str, table)
-    local bool, out = false
-
+    local out = {}
     for _, v in pairs(table) do
         if string.find(v.name:lower(), str) then
-            bool = true
-            out = v
+            out[#out+1] = v
         end
     end
-
-    return bool, out
+    if #out == 0 then 
+        return false, {}
+    else
+        return true, out
+    end
 end
 
 local function _downloadList()
@@ -54,6 +55,7 @@ while true do
     print("["..player.."]: "..msg)
     local split_string = Split(msg, " ")
     msg = (split_string[1]):lower()
+
     if msg == "preço" or msg == "preco" or msg == "price" then
         local item
         local stats, result
@@ -65,7 +67,10 @@ while true do
         end
 
         if stats then
-            sendMessage(("[Tier %s] [%s]:\n %s"):format(result.tier, result.name, result.info), player)
+            for i, v in pairs(result) do
+                sendMessage(("[Tier %s] [%s]:\n %s"):format(v.tier, v.name, v.info), player)
+                sleep(1)
+            end
         else
             sendMessage(("[%s] não foi encontrado na tabela\nTente pesquisar por outro nome\nOu calcule o proço baseado nos item usado para o craft\nUse \"help\" para mais informações"):format(item), player)
         end
@@ -99,8 +104,8 @@ while true do
                 sendMessage(error,player)
             end
         end
-        if tonumber(split_string[2]) and tonumber(split_string[4]) then
-            if split_string[3] == "/" or split_string[3] == "%" then
+        if split_string[3] == "/" or split_string[3] == "%" then
+            if tonumber(split_string[2]) and tonumber(split_string[4]) then
                 sendMessage("A divisão de "..split_string[2].." por "..split_string[4].." é ["..tonumber(split_string[2]) / tonumber(split_string[4]).."]", player)
             else
                 sendMessage(error,player)
