@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Play Music.iml" filepath="$PROJECT_DIR$/Play Music.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../CCrepo/Play Music.iml" filepath="$PROJECT_DIR$/../CCrepo/Play Music.iml" />
     </modules>
   </component>
 </project>
