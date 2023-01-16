@@ -1,0 +1,104 @@
+-- By Player_rs
+-- License MIT
+-- V 0.2
+
+local ar = {}
+local arScreen
+
+for _, side in pairs({ 'back', 'top', 'left', 'right', 'bottom' }) do
+    if peripheral.getType(side) == 'arController' then
+        arScreen = peripheral.wrap(side)
+        break
+    end
+end
+if arScreen == nil then error("arController not found") end
+
+local welcome = "## AR API LOADED! ##"
+print(string.rep("#",#welcome))
+print(welcome)
+print(string.rep("#",#welcome))
+
+---@function Activates or deactivates relative mode. Requires virtual screen width and height if it's being enabled.
+function ar.setRelativeMode(boolean, virtualScreenWidth, virtualScreenHeight)
+    return arScreen.setRelativeMode(boolean, virtualScreenWidth, virtualScreenHeight)
+end
+
+---@function The screen at all or by id
+---@param id number the element id for id based draws
+function ar.clear(id)
+    if id then
+        return arScreen.clearElement(id)
+    else
+        return arScreen.clear()
+    end
+end
+
+---@function Draws the given string to the specified position and the specified color.
+function ar.drawString(text, x, y, color)
+    return arScreen.drawString(text, x, y, color)
+end
+
+---@function The same as drawString(), but centers the string horizontally around the specified position.
+function ar.drawCenteredString(text, x, y, color)
+    return arScreen.drawCenteredString(text, x, y, color)
+end
+
+---@function The same as drawString(), but the string is positioned with its right end at the specified position.
+function ar.drawRightBoundString(text, x, y, color)
+    return arScreen.drawRightboundString(text, x, y, color)
+end
+
+---@function Draws a horizontal line in the given color from minX to maxX at vertical y.
+function ar.horizontalLine(minX, maxX, y, color)
+    return arScreen.horizontalLine(minX, maxX, y, color)
+end
+
+---@function Draws a vertical line in the given color from minY to maxY at horizontal x.
+function ar.verticalLine(x, minY, maxY, color)
+    return arScreen.verticalLine(x, minY, maxY, color)
+end
+
+---@function Draws a rectangular gradient from colorFrom to colorTo with the given corners.
+function ar.fillGradient(minX, minY, maxX, maxY, colorFrom, colorTo)
+    return arScreen.fillGradient(minX, minY, maxX, maxY, colorFrom, colorTo)
+end
+
+---@function Fills a rectangle with the given color from the corner minX, minY to maxX, maxY.
+function ar.fill(minX, minY, maxX, maxY, color)
+    return arScreen.fill(minX, minY, maxX, maxY, color)
+end
+
+---@function Draws a Square on the screen Works until level 2 of thickness
+function ar.drawSquare(minX, minY, maxX, maxY, thickness, color)
+    if not thickness then thickness = 0 end
+    for i = 0, thickness do
+        local x = minX - i
+        local yMin = minY - i
+        local yMax = maxY + i
+        arScreen.verticalLine(x, yMin, yMax, color)
+    end
+
+    for i = 0, thickness do
+        local xMin = minX - i
+        local xMax = maxX + i
+        local y = minY - i
+        arScreen.horizontalLine(xMin, xMax, y, color)
+    end
+
+    for i = 0, thickness do
+        local x = maxX + i
+        local yMin = minY - i
+        local yMax = maxY + i
+        arScreen.verticalLine(x, yMin, yMax, color)
+    end
+
+    for i = 0, thickness do
+        local xMin = minX - i
+        local xMax = maxX + i
+        local y = maxY + i
+        arScreen.horizontalLine(xMin, xMax, y, color)
+    end
+    return
+end
+
+return ar
