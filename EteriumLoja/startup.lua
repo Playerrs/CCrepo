@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V2.0
+-- By Reavik and Player_rs V2.1
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -104,8 +104,8 @@ while true do
                 sendMessage(error,player)
             end
         end
-        if tonumber(split_string[2]) and tonumber(split_string[4]) then
-            if split_string[3] == "/" or split_string[3] == "%" then
+        if split_string[3] == "/" or split_string[3] == "%" then
+            if tonumber(split_string[2]) and tonumber(split_string[4]) then
                 sendMessage("A divisão de "..split_string[2].." por "..split_string[4].." é ["..tonumber(split_string[2]) / tonumber(split_string[4]).."]", player)
             else
                 sendMessage(error,player)
