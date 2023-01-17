@@ -1,6 +1,6 @@
 -- By Player_rs
 -- License MIT
--- V 0.0
+-- V 0.1
 
 -- Dirs
 local __APIDir = "APIs/"
@@ -48,7 +48,7 @@ local function runtime()
     local hub = getHUB(read())
 
     while true do
-        local c, msg = modem:receive()
+        local c, msg = mAPI.receive()
         hub.run(msg)
         sleep(2)
     end
