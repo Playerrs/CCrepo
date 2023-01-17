@@ -1,0 +1,36 @@
+-- By Player_rs
+-- License MIT
+-- V 0.0
+
+local api = {}
+
+---@function Wrap and open channel on monitor
+---@param channel number
+---@param side string
+function api.startModem(channel, side)
+    local modem
+    if side then
+        modem = peripheral.wrap(side)
+    else
+        modem = peripheral.find("modem")
+    end
+    modem.open(channel)
+    return modem
+end
+
+---@param channel number
+---@param rChannel number
+---@param message any
+function api.modem:transmit(channel, rChannel, message)
+    return self.transmit(channel, rChannel, message)
+end
+
+function api.modem:receive()
+    local e, p, channel, rChannel, message, distance = os.pullEvent("modem_message")
+    if not message then
+        api.self:receive()
+    end
+    return channel, message
+end
+
+return api
