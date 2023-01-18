@@ -1,4 +1,4 @@
--- By Reavik and Player_rs V2.5s
+-- By Reavik and Player_rs V2.7
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
@@ -6,7 +6,7 @@ local modem = peripheral.find("modem")
 if modem == nil then print("modem not found") end
 modem.open(7777, 98)
 
-local nameBot = "Robsom"
+local nameBot = "Robson"
 local woner = "Reavik"
 local remove = false
 
@@ -26,7 +26,7 @@ local function loadTabela()
 end
 
 local function sendMessage(msg, player)
-    cb.sendMessageToPlayer(msg, player, nameBot)
+    cb.sendMessageToPlayer(msg, player, nameBot.." Store by: Reavik")
 end
 
 local function findItem(str, table)
@@ -47,8 +47,9 @@ end
 local function _downloadList()
     if not fs.exists(nameBot) then
         fs.makeDir(nameBot)
+        print("d")
     end
-    shell.run("wgethttps://raw.githubusercontent.com/Reaviik/EteriumRobsonStore/main/PriceTable.lua "..nameBot.."/PriceTable.lua")
+    shell.run("wget https://raw.githubusercontent.com/Reaviik/EteriumRobsonStore/main/PriceTable.lua Robson/PriceTable.lua")
 end
 
 -- Main
@@ -131,7 +132,7 @@ while true do
         --resulta em algo assim {name = "Minhoca", info = "2.000/inv", tier = 1},
         table.remove(split_string, 1)
         --split 3 valores "mane" "info" "tier" e separas as palavras
-        local name = string.gsub(split_string[1], "(%u)", " %1"):gsub("^%*", "",1)
+        local name = string.gsub(split_string[1], "(%u)", " %1"):gsub("^%*", "")
         --R preço unitario / pack
         local preco = tonumber(split_string[2])
         --R andar
@@ -146,7 +147,7 @@ while true do
                 f.write(textutils.serialise(tabela))
                 --fexar a tabela
                 f.close()
-                sendMessage("O item "..(name:gsub("^%*", "",1)).." foi adicionado a tabela por "..preco.." no andar "..andar, player)
+                sendMessage("O item "..(name).." foi adicionado a tabela por "..preco.." no andar "..andar, player)
             else
                 sendMessage("O andar precisa ser um numero!")
         end
