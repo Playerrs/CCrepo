@@ -1,6 +1,6 @@
 -- By Player_rs
 -- License MIT
--- V 0.2
+-- V 1.0
 
 local api = {}
 
@@ -18,17 +18,10 @@ function api.startModem(channel, side)
     return modem
 end
 
----@param channel number
----@param rChannel number
----@param message any
-function api.transmit(modem, channel, rChannel, message)
-    return modem.transmit(channel, rChannel, message)
-end
-
 function api.receive()
     local e, p, channel, rChannel, message, distance = os.pullEvent("modem_message")
     if not message then
-        api.self:receive()
+        api.receive()
     end
     return channel, message
 end
