@@ -3,16 +3,16 @@
 -- V 1.0
 
 local modemPort
---> = 216 (random number... See more in https://tweaked.cc/peripheral/modem.html)
+-->Eg: = 216 (random number... See more in https://tweaked.cc/peripheral/modem.html)
 
 local delay
---> = 3 (in seconds)
+-->Eg: = 3 (in seconds)
 
-local cbName
---> = "Robot"
+local cbName = ""
+-->Eg: = "Robot"
 
 local whiteList = {
-    --"Player_rs"
+-->Eg:  "Player_rs",
 }
 
 -- Dirs
@@ -32,8 +32,9 @@ term.setTextColor(colors.white)
 -- Checks
 if not fs.exists(__HUDsDir) then fs.makeDir(__HUDsDir) end
 if not fs.exists(__APIDir) then fs.makeDir(__APIDir) end
-if modemPort
-
+if not modemPort or not delay or not whiteList[1] then
+    error("View the file to change some settings!")
+end
 
 if not fs.exists(__APIDir.."ARAPI") then
     shell.run("wget https://raw.githubusercontent.com/Playerrs/CCrepo/master/APIs/ARAPI "..__APIDir.."ARAPI")
