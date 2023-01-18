@@ -1,9 +1,10 @@
--- By Reavik, Player_rs and HarryKaray V3.0s
+-- By Reavik and Player_rs V2.5s
 
 local cb = peripheral.find("chatBox")
 if cb == nil then print("chatBox no found") end
 local modem = peripheral.find("modem")
 if modem == nil then print("modem not found") end
+modem.open(7777, 98)
 
 local nameBot = "Robsom"
 local woner = "Reavik"
