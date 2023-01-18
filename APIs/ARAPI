@@ -1,6 +1,6 @@
 -- By Player_rs
 -- License MIT
--- V 0.2
+-- V 0.3
 
 local ar = {}
 local arScreen
@@ -38,9 +38,19 @@ function ar.drawString(text, x, y, color)
     return arScreen.drawString(text, x, y, color)
 end
 
+---@function The same as drawString(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.drawStringWithId(id, text, x, y, color)
+    return arScreen.drawStringWithId(id, text, x, y, color)
+end
+
 ---@function The same as drawString(), but centers the string horizontally around the specified position.
 function ar.drawCenteredString(text, x, y, color)
     return arScreen.drawCenteredString(text, x, y, color)
+end
+
+---@function The same as drawCenteredString(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.drawCenteredStringWithId(id, text, x, y, color)
+    return arScreen.drawCenteredStringWithId(id, text, x, y, color)
 end
 
 ---@function The same as drawString(), but the string is positioned with its right end at the specified position.
@@ -48,9 +58,39 @@ function ar.drawRightBoundString(text, x, y, color)
     return arScreen.drawRightboundString(text, x, y, color)
 end
 
+---@function The same as drawRightboundString(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.drawRightBoundStringWithId(id, text, x, y, color)
+    return arScreen.drawRightboundStringWithId(id, text, x, y, color)
+end
+
+---@function Draws a circle without filling it.
+function ar.drawCircle(x, y, radius, color)
+    return arScreen.drawCircle(x, y, radius, color)
+end
+
+---@function The same as drawCircle(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.drawCircleWithId(id, x, y, radius, color)
+    return arScreen.drawCircleWithId(id, x, y, radius, color)
+end
+
+---@function Draws an item icon on screen!!
+function ar.drawItemIcon(itemId, x, y)
+    return arScreen.drawItemIcon(itemId, x, y)
+end
+
+---@function The same as drawItemIcon(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.drawItemIconWithId(id, itemId, x, y)
+    return arScreen.ar.drawItemIconWithId(id, itemId, x, y)
+end
+
 ---@function Draws a horizontal line in the given color from minX to maxX at vertical y.
 function ar.horizontalLine(minX, maxX, y, color)
     return arScreen.horizontalLine(minX, maxX, y, color)
+end
+
+---@function The same as horizontalLine(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.horizontalLineWithId(id, minX, maxX, y, color)
+    return arScreen.horizontalLineWithId(id, minX, maxX, y, color)
 end
 
 ---@function Draws a vertical line in the given color from minY to maxY at horizontal x.
@@ -58,14 +98,44 @@ function ar.verticalLine(x, minY, maxY, color)
     return arScreen.verticalLine(x, minY, maxY, color)
 end
 
+---@function The same as verticalLine(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.verticalLineWithId(id, x, minY, maxY, color)
+    return arScreen.verticalLineWithId(id, x, minY, maxY, color)
+end
+
 ---@function Draws a rectangular gradient from colorFrom to colorTo with the given corners.
 function ar.fillGradient(minX, minY, maxX, maxY, colorFrom, colorTo)
     return arScreen.fillGradient(minX, minY, maxX, maxY, colorFrom, colorTo)
 end
 
+---@function
+function ar.fillGradientWithId(id, minX, minY, maxX, maxY, colorFrom, colorTo)
+    return arScreen.fillGradientWithId(id, minX, minY, maxX, maxY, colorFrom, colorTo)
+end
+
 ---@function Fills a rectangle with the given color from the corner minX, minY to maxX, maxY.
 function ar.fill(minX, minY, maxX, maxY, color)
     return arScreen.fill(minX, minY, maxX, maxY, color)
+end
+
+---@function The same as fill(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.fillWithId(id, minX, minY, maxX, maxY, color)
+    return arScreen.fillWithId(id, minX, minY, maxX, maxY, color)
+end
+
+---@function Draws a full circle.
+function ar.fillCircle(x, y, radius, color)
+    return arScreen.fillCircle(x, y, radius, color)
+end
+
+---@function The same as fillCircle(), but has an id so it can be overridden later on or can be completely cleared.
+function ar.fillCircleWithId(id, x, y, radius, color)
+    return arScreen.fillCircleWithId(id, x, y, radius, color)
+end
+
+---@function Returns true and the size of the virtual screen if relative mode is active, or just false if it isn't.
+function ar.isRelativeMode()
+    return arScreen.isRelativeMode()
 end
 
 ---@function Draws a Square on the screen Works until level 2 of thickness
