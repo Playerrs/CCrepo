@@ -1,6 +1,6 @@
 -- By Player_rs
 -- License MIT
--- V 1.0
+-- V 1.1
 
 local modemPort
 -->Eg: = 216 (random number... See more in https://tweaked.cc/peripheral/modem.html)
@@ -99,6 +99,7 @@ local function requireHUD(HUDName, player)
         cb.sendMessageToPlayer(str, player, cbName)
     end
     print(str)
+    return require(__HUDsDir..openDataFileHUD())
 end
 
 local function choseHUD()
@@ -140,7 +141,7 @@ local function waitForChat()
             end
         end
     end
-    waitForChat()
+    return waitForChat()
 end
 
 -- Runtime
