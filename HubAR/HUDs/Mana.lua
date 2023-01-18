@@ -15,6 +15,7 @@ function hub.run(...)
     local str = var1.." / "..var2
 
     ar.clear()
+    ar.drawItemIcon("botanicalmachinery:mana_battery", 705, 425)
     ar.horizontalLine(700, 780, 420, color)
     ar.drawCenteredString(str, 775, 425, color)
 end
