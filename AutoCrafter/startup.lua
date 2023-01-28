@@ -1,5 +1,5 @@
 -- By Player_rs
--- V 1.1
+-- V 1.2
 
 local name_inventory_crafters = "metalbarrels:diamond_tile" -- You Can change
 local name_inventory_input = "metalbarrels:gold_tile_0"     -- You Can change
@@ -98,14 +98,16 @@ end
 
 local function craftBridge(item)
     local stored = bridge.getItem({name = item.name, nbt = item.nbt or nil})
-    bridge.craftItem({name = item.name, count = item.count, nbt = item.nbt or nil})
-    local crafted = false
-    while not crafted do
-        local item = bridge.getItem({name = item.name, nbt = item.nbt or nil})
-        if item.count >= stored.count then
-            crafted = true
+    if not bridge.isItemCrafting({name = item.name, nbt = item.nbt or nil}) then
+        bridge.craftItem({name = item.name, count = item.count, nbt = item.nbt or nil})
+        local crafted = false
+        while not crafted do
+            local crafted_item = bridge.getItem({name = item.name, nbt = item.nbt or nil})
+            if crafted_item.count >= (stored.count + item.count) then
+                crafted = true
+            end
+            sleep(4)
         end
-        sleep(4)
     end
 end
 
