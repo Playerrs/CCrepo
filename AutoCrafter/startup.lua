@@ -1,8 +1,9 @@
 -- By Player_rs
--- V 1.0
+-- V 1.1
 
 local name_inventory_crafters = "metalbarrels:diamond_tile" -- You Can change
 local name_inventory_input = "metalbarrels:gold_tile_0"     -- You Can change
+local chest_postion_related_bridge = "south"
 
 
 -- WRAP THINGS
@@ -88,7 +89,7 @@ end
 local function _craft(pack, times)
     for _ = 1, times do
         for _, v in pairs(pack.ingredients)do
-            bridge.exportItem({name = v.name, count = v.count, nbt = v.nbt or nil}, "south")--.."_"..(pack.crafter - 4))
+            bridge.exportItem({name = v.name, count = v.count, nbt = v.nbt or nil}, chest_postion_related_bridge)
             crafters[pack.crafter].pullItems(name_inventory_input, 1)
         end
         sleep(2)
