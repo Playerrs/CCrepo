@@ -1,9 +1,9 @@
 -- By Player_rs
--- V 1.2
+local V = 1.3
 
 local name_inventory_crafters = "metalbarrels:diamond_tile" -- You Can change
 local name_inventory_input = "metalbarrels:gold_tile_0"     -- You Can change
-local chest_postion_related_bridge = "south"
+local chest_postion_related_bridge = "south"                -- You Can change
 
 
 -- WRAP THINGS
@@ -79,8 +79,8 @@ end
 local function verifyItem(pack, times)
     for _, v in pairs(pack.ingredients)do
         local item = bridge.getItem({name = v.name, nbt = v.nbt or nil})
-        if item.count < (v.count + times) then
-            return false, {name = v.name, count = (v.count * times)}
+        if item.count < (v.count * times) then
+            return false, {name = v.name, count = (v.count * times) - item.count}
         end
     end
     return true
@@ -133,7 +133,7 @@ local function prepareTerminal()
     term.getBackgroundColor(oldBGColor)
     term.setCursorPos(1, 1)
 
-    local str = "Player_rs's Auto Crafter"
+    local str = "Player_rs's Auto Crafter V"..V
     print(string.rep("#", W))
     term.setCursorPos(math.ceil(W/2 - str:len()/2), 2)
     print(str)
@@ -175,7 +175,10 @@ local complete = {
 local function readAndComplete(comp, space)
     print(" ")
     term.write("> ")
+    local oldColor = term.getTextColor()
+    term.setTextColor(colors.white)
     local _ = read(nil, nil, function(text) return completion.choice(text, comp, space) end)
+    term.setTextColor(oldColor)
     print(" ")
     return _
 end
@@ -193,7 +196,7 @@ while true do
 
     if input == "new" then
         __loadPeripherals()
-        print("[?] Name for the recipe: (Create or Override)\n[?] ..")
+        print("[?] Name for the recipe: (Create or Override)\n   [?] ..")
         local fileName = readAndComplete(__list_recipes)
         print("[...] Processing...\n")
         local ing, result = _loadIngredientsAndResult()
@@ -214,7 +217,7 @@ while true do
         sleep(2)
 
     elseif input == "craft" then
-        print("[?] Recipe:\n[?] ..")
+        print("[?] Recipe:\n   [?] ..")
         local recipeName = readAndComplete(__list_recipes)
         print("[?] Amount:")
         local amount = readAndComplete({})
