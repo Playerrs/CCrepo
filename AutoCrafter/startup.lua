@@ -1,5 +1,5 @@
 -- By Player_rs
-local V = 1.3
+local V = 1.4
 
 local name_inventory_crafters = "metalbarrels:diamond_tile" -- You Can change
 local name_inventory_input = "metalbarrels:gold_tile_0"     -- You Can change
@@ -12,8 +12,18 @@ local crafters = {}
 local inventory_input
 local __i
 
-local __chest_input = peripheral.wrap("top")
+local __chestPatternRecipes = peripheral.wrap("top")
 local bridge = peripheral.find("meBridge") or peripheral.find("rsBridge")
+
+-- VERIFICATIONS
+if not fs.exists("recipes")then fs.makeDir("recipes") end
+if not bridge then error("[X] You need to use a rsBridge or meBridge to connect with your system!") end
+
+
+local __list_recipes = fs.list("recipes")
+local complete = {
+    commands = {"new", "craft", "list"}
+}
 
 -- FUNCTIONS
 local function __loadPeripherals()
@@ -49,7 +59,7 @@ local function unserialize(name)
 end
 
 local function _loadIngredientsAndResult()
-    local t, ing, result = __chest_input.list(), {}, {}
+    local t, ing, result = __chestPatternRecipes.list(), {}, {}
 
     for i = 1, #t do
         if i ~= #t then
@@ -166,11 +176,6 @@ local function tryCraft(recipe, times)
     print("[C] Crafting...\n")
     _craft(recipe, times)
 end
-
-local __list_recipes = fs.list("recipes")
-local complete = {
-    commands = {"new", "craft", "list"}
-}
 
 local function readAndComplete(comp, space)
     print(" ")
