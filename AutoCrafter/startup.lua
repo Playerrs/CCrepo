@@ -1,5 +1,5 @@
 -- By Player_rs
-local V = 1.4
+local V = 1.5
 
 local name_inventory_crafters = "metalbarrels:diamond_tile" -- You Can change
 local name_inventory_input = "metalbarrels:gold_tile_0"     -- You Can change
@@ -13,7 +13,9 @@ local inventory_input
 local __i
 
 local __chestPatternRecipes = peripheral.wrap("top")
-local bridge = peripheral.find("meBridge") or peripheral.find("rsBridge")
+local __me = peripheral.find("meBridge")
+local __rs =  peripheral.find("rsBridge")
+local bridge = __me or __rs
 
 -- VERIFICATIONS
 if not fs.exists("recipes")then fs.makeDir("recipes") end
@@ -26,6 +28,45 @@ local complete = {
 }
 
 -- FUNCTIONS
+
+local function clearBox(xMin, xMax, yMin, yMax)
+    term.setBackgroundColor(colors.black)
+    for xPos = xMin, xMax, 1 do
+        for yPos = yMin, yMax do
+            term.setCursorPos(xPos, yPos)
+            term.write(" ")
+        end
+    end
+end
+
+local function prepareTerminal()
+    local terminal = term.current()
+    term.redirect(term.native())
+    local W, H = term.getSize()
+    term.setTextColor(colors.green)
+    term.clear()
+    local oldBGColor = term.getBackgroundColor()
+    term.setBackgroundColor(colors.gray)
+    clearBox(1, W, 1, H)
+    term.getBackgroundColor(oldBGColor)
+    term.setCursorPos(1, 1)
+
+    local str = "Player_rs's Auto Crafter V"..V
+    print(string.rep("#", W))
+    term.setCursorPos(math.ceil(W/2 - str:len()/2), 2)
+    print(str)
+    print(string.rep("#", W))
+
+    return terminal
+end
+
+local function printColor(str, color)
+    local oldColor = term.getTextColor()
+    term.setTextColor(color)
+    print(str)
+    term.setTextColor(oldColor)
+end
+
 local function __loadPeripherals()
     crafters = {}
     __i = 1
@@ -86,11 +127,19 @@ local function findRecipe(str)
     return false
 end
 
+local function isItemCrafting(item)
+    if __me then
+        return bridge.isItemCrafting({name = item.name, nbt = item.nbt or nil})
+    else
+        return bridge.isItemCrafting(item.name)
+    end
+end
+
 local function verifyItem(pack, times)
     for _, v in pairs(pack.ingredients)do
         local item = bridge.getItem({name = v.name, nbt = v.nbt or nil})
-        if item.count < (v.count * times) then
-            return false, {name = v.name, count = (v.count * times) - item.count}
+        if item.amount < (v.count * times) then
+            return false, {name = v.name, amount = (v.count * times) - item.amount}
         end
     end
     return true
@@ -108,67 +157,36 @@ end
 
 local function craftBridge(item)
     local stored = bridge.getItem({name = item.name, nbt = item.nbt or nil})
-    if not bridge.isItemCrafting({name = item.name, nbt = item.nbt or nil}) then
-        bridge.craftItem({name = item.name, count = item.count, nbt = item.nbt or nil})
-        local crafted = false
-        while not crafted do
-            local crafted_item = bridge.getItem({name = item.name, nbt = item.nbt or nil})
-            if crafted_item.count >= (stored.count + item.count) then
-                crafted = true
+    if not isItemCrafting({name = item.name, nbt = item.nbt or nil}) then
+        local canCraft = bridge.craftItem({name = item.name, count = item.amount, nbt = item.nbt or nil})
+        if canCraft then
+            local crafted = false
+            while not crafted do
+                local crafted_item = bridge.getItem({name = item.name, nbt = item.nbt or nil})
+                if crafted_item.amount >= (stored.amount + item.amount) then
+                    crafted = true
+                end
+                sleep(4)
             end
-            sleep(4)
+        else
+            printColor(string.format("[X] Not Able to Craft [%s] [%s]", item.name, item.amount), colors.red)
+            sleep(5)
+            os.reboot()
         end
     end
-end
-
-local function clearBox(xMin, xMax, yMin, yMax)
-    term.setBackgroundColor(colors.black)
-    for xPos = xMin, xMax, 1 do
-        for yPos = yMin, yMax do
-            term.setCursorPos(xPos, yPos)
-            term.write(" ")
-        end
-    end
-end
-
-local function prepareTerminal()
-    local terminal = term.current()
-    term.redirect(term.native())
-    local W, H = term.getSize()
-    term.setTextColor(colors.green)
-    term.clear()
-    local oldBGColor = term.getBackgroundColor()
-    term.setBackgroundColor(colors.gray)
-    clearBox(1, W, 1, H)
-    term.getBackgroundColor(oldBGColor)
-    term.setCursorPos(1, 1)
-
-    local str = "Player_rs's Auto Crafter V"..V
-    print(string.rep("#", W))
-    term.setCursorPos(math.ceil(W/2 - str:len()/2), 2)
-    print(str)
-    print(string.rep("#", W))
-
-    return terminal
-end
-
-local function printColor(str, color)
-    local oldColor = term.getTextColor()
-    term.setTextColor(color)
-    print(str)
-    term.setTextColor(oldColor)
 end
 
 local function tryCraft(recipe, times)
     local bool, miss = verifyItem(recipe, times)
     if not bool then
-        printColor(string.format("[X] Missing item [%s] [%s] for [%s] [%s]\n", miss.name, miss.count, recipe.result[1].name, times), colors.red)
+        printColor(string.format("[X] Missing item [%s] [%s]", miss.name, miss.amount ), colors.red)
+        printColor(string.format("To Craft [%s] [%s]\n", recipe.result[1].name, times), colors.red)
         if bridge.isItemCraftable(miss) then
-            printColor(string.format("[CB] Crafting [%s] [%s]\n", miss.name, miss.count), colors.yellow)
+            printColor(string.format("[CB] Crafting [%s] [%s]\n", miss.name, miss.amount), colors.yellow)
             craftBridge(miss)
         end
     end
-    local bool = verifyItem(recipe, times)
+    bool = verifyItem(recipe, times)
     if not bool then
         tryCraft(recipe, times)
         return
@@ -188,6 +206,7 @@ local function readAndComplete(comp, space)
     return _
 end
 
+-- RUNTIME
 __loadPeripherals()
 while true do
     local terminal = prepareTerminal()
