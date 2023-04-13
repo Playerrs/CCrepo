@@ -1,0 +1,465 @@
+local version = "1.5"
+
+function serialize(data, name)
+    if not fs.exists('SS/data') then
+        fs.makeDir('SS/data')
+    end
+    local f = fs.open('SS/data/'..name, 'w')
+    f.write(textutils.serialize(data))
+    f.close()
+end
+serialize(version, ".versionManager")
+
+local W,H = term.getSize()
+settings.load(".settings")
+margin = 2
+local color
+
+if settings.get("Margin") ~= nil then
+    margin = tonumber(settings.get("Margin"))
+else
+    margin = 2
+end
+local colorsDecimal = {
+    [1] = 1,        --- white
+    [2] = 2,        --- orange
+    [3] = 4,        --- magenta
+    [4] = 8,        --- lightBlue
+    [5] = 16,       --- yellow
+    [6] = 32,       --- lime
+    [7] = 64,       --- pink
+    [8] = 128,      --- gray
+    [9] = 256,      --- lightGray
+    [10] = 512,     --- cyan
+    [11] = 1024,    --- purple
+    [12] = 2048,    --- blue
+    [13] = 4096,    --- brown
+    [14] = 8192,    --- green
+    [15] = 16384,   --- red
+    [16] = 32768,   --- black
+}
+
+local colorsAPI = {
+    [1] = 'colors.white',
+    [2] = 'colors.orange',
+    [3] = 'colors.magenta',
+    [4] = 'colors.lightBlue',
+    [5] = 'colors.yellow',
+    [6] = 'colors.lime',
+    [7] = 'colors.pink',
+    [8] = 'colors.gray',
+    [9] = 'colors.lightGray',
+    [10] = 'colors.cyan',
+    [11] = 'colors.purple',
+    [12] = 'colors.blue',
+    [13] = 'colors.brown',
+    [14] = 'colors.green',
+    [15] = 'colors.red',
+    [16] = 'colors.black',
+}
+if settings.get("SelectedColor") ~= nil then
+    for i=1, #colorsDecimal do
+        if tonumber(settings.get("SelectedColor")) == colorsDecimal[i] then
+            color = tonumber(settings.get("SelectedColor"))
+            break
+        elseif string.find(colorsAPI[i], settings.get("SelectedColor")) then
+            color = colorsDecimal[i]
+            break
+        end
+    end
+
+    if color == nil then
+        color = colors.gray
+    end
+else
+    color = colors.gray
+end
+
+function isSelected(name, nameId, currentSelected)
+    --debug(nameId,currentSelected)
+    if type(nameId) == "table" then nameId = nameId.id end
+    if nameId == currentSelected then
+        if type(name) == "table" then name = name["name"] end
+        if settings.get("AlignmentBrackets") then
+            local x = string.len(name)
+            if x >= 16 then
+                return "{{ THIS STRING EXTENDS TO 16 CHARACTERS }}"
+            else
+                local space = string.rep(" ",8-x/2)
+                term.setTextColor(color)
+                return ">"..space..name..space.."<"
+            end
+            term.setTextColor(color)
+            return "> "..name.." <"
+        else
+            term.setTextColor(color)
+            return "> "..name.." <"
+        end
+    else
+        term.setTextColor(colors.white)
+        return name
+    end
+end
+
+function getInputKey(maxOptions, var)
+    --debug(maxOptions,var)
+    while true do
+        local event, key = os.pullEvent('key')
+        if event == "key" then
+            if key == keys.up then
+                if var > 1 then
+                    var = var - 1
+                    return var
+                else
+                    return var + maxOptions-1
+                end
+            elseif key == keys.down then
+                if var < maxOptions then
+                    var = var + 1
+                    return var
+                else
+                    return var - maxOptions+1
+                end
+            elseif key == keys.enter or key == keys.numPadEnter then
+                return "enter"
+            end
+        end
+    end
+end
+
+function reset()
+    term.clear()
+    term.setCursorPos(1,1)
+end
+
+function getAnswer(simpleQuestion)
+    print("")
+    term.write(">> ")
+    if not simpleQuestion then
+        local _ = string.upper(read())
+        if _ == "Y" or _ == "S" then
+            return true
+        elseif _ == "N" then
+            return false
+        else
+            term.setTextColor(colors.red)
+            print("\nIt's not the answer I was waiting for. :V")
+            term.setTextColor(colors.orange)
+            print("Rebooting...")
+            term.setTextColor(colors.white)
+            sleep(4)
+            os.reboot()
+        end
+    else
+        local _ = read()
+        if _ == "Y" or _ == "S" then
+            return true
+        elseif _ == "N" then
+            return false
+        elseif _ == "exit" or _ == "clear" then
+            return ""
+        else
+            return _
+        end
+    end
+end
+
+function printCenter(s,...)
+    local arg = {...}
+    local clear = arg[1]
+    local y = arg[2]
+    local color = arg[3]
+    local bgColor = arg[4]
+    if type(s) == "table" then
+        s = s.name
+    end
+    if y == nil then
+        _,y = term.getCursorPos()
+        y = y+1
+    end
+    if y == "same" then
+        _,y = term.getCursorPos()
+    end
+    if y ~= nil and y ~= "same" then
+        local _,o = term.getCursorPos()
+        local x = string.sub(y, 1, 1)
+        local z = string.sub(y, 2,3)
+        if x == "+" then
+            y = o + tonumber(z)
+        end
+        if x == "-" then
+            y = o - tonumber(z)
+        end
+        if x == "*" then
+            y = o * tonumber(z)
+        end
+        if x == "/" then
+            y = o / tonumber(z)
+        end
+    end
+
+    local x = math.floor((W - string.len(s))/2)
+    term.setCursorPos(x,y)
+    if clear or clear == nil then term.clearLine() end
+    if color then term.setTextColor(color) end
+    if bgColor then term.setBackgroundColor(bgColor) end
+    term.write(s)
+    term.setTextColor(colors.white)
+    if bgColor then term.setBackgroundColor(colors.black) end
+end
+
+function printLeft(s,clear,y, color)
+    if type(s) == "table" then
+        s = s.name
+    end
+    if y == nil then
+        _,y = term.getCursorPos()
+        y = y+1
+    end
+    if y == "same" then
+        _,y = term.getCursorPos()
+    end
+    if y ~= nil and y ~= "same" then
+        local _,o = term.getCursorPos()
+        local x = string.sub(y, 1, 1)
+        local z = string.sub(y, 2,3)
+        if x == "+" then
+            y = o + tonumber(z)
+        end
+        if x == "-" then
+            y = o - tonumber(z)
+        end
+        if x == "*" then
+            y = o * tonumber(z)
+        end
+        if x == "/" then
+            y = o / tonumber(z)
+        end
+    end
+    local x = margin
+    if margin < 1 then x = 1 end
+    term.setCursorPos(x,y)
+    if clear or clear == nil then term.clearLine() end
+    if color then term.setTextColor(color) end
+    term.write(s)
+    term.setTextColor(colors.white)
+end
+
+function printRight(s,clear,y, color)
+    if type(s) == "table" then
+        s = s.name
+    end
+    if y == nil then
+        _,y = term.getCursorPos()
+        y = y+1
+    end
+    if y == "same" then
+        _,y = term.getCursorPos()
+    end
+    if y ~= nil and y ~= "same" then
+        local _,o = term.getCursorPos()
+        local x = string.sub(y, 1, 1)
+        local z = string.sub(y, 2,3)
+        if x == "+" then
+            y = o + tonumber(z)
+        end
+        if x == "-" then
+            y = o - tonumber(z)
+        end
+        if x == "*" then
+            y = o * tonumber(z)
+        end
+        if x == "/" then
+            y = o / tonumber(z)
+        end
+    end
+
+    local x = math.floor((W - string.len(s)) - margin)
+    term.setCursorPos(x,y)
+    if clear or clear == nil then term.clearLine() end
+    if color then term.setTextColor(color) end
+    term.write(s)
+    term.setTextColor(colors.white)
+end
+
+function printMultiLines(...)
+    local arg = {...}
+    local s = arg[1]
+    local y = arg[2]
+    local color = arg[3]
+    local bgColor = arg[4]
+    local list = {}
+
+    repeat
+        if string.sub(s, W-margin-1, W-margin-1) ~= " " then
+            local i = 2
+            repeat
+                local T
+                if string.sub(s, W-margin-i, W-margin-i) ~= " " then
+                    i = i + 1
+                else
+                    table.insert(list, string.sub(s, 1, W-margin-i))
+                    s = string.sub(s, W-margin-i)
+                    T = true
+                end
+            until T == true
+        else
+            table.insert(list, string.sub(s, 1, W-margin-1))
+            s = string.sub(s, W-margin)
+        end
+    until string.len(s) <= W-margin
+
+    for i=1, #list do
+        printCenter(list[i], true, y, color, bgColor)
+        y = nil
+    end
+    printCenter(s, nil, nil, color, bgColor)
+end
+
+function saveSettings(object, settingsName, settingsFile, settingsValue, reboot)
+    if settingsValue ~= nil then
+        settings.set(settingsName, settingsValue)
+    else
+        printMultiLines('--> Value to set in config file or write "exit" to go back')
+        printLeft(">> ", true, "+2")
+        local read = read()
+        if read == "exit" then
+            object:run(1)
+            object:runAction()
+        else
+            settings.set(settingsName, read)
+            printLeft('> ['..settingsName..'] settings saved as "'..read..'"', true, "+2")
+            sleep(4)
+        end
+    end
+    settings.save(settingsFile)
+    if reboot then
+        os.reboot()
+    else
+        if object ~= nil then
+            object:run(1)
+            object:runAction()
+        else
+            printLeft("Settings Saved!")
+        end
+    end
+end
+
+function debug(...)
+    local arg = {...}
+    local textColor = term.getTextColor()
+    local x,y = term.getCursorPos()
+    for i=1, #arg do
+        if type(arg[i]) == "table" then
+            for k,v in pairs(arg[i]) do
+                if type(v) == "table" then
+                    for i=1,#v do
+                        for e,f in pairs(v) do
+                            term.setTextColor(colors.red)
+                            printRight(e.." "..f,false,2+i)
+                        end
+                    end
+                else
+                    term.setTextColor(colors.red)
+                    printRight(k.." "..v,false,2+i)
+                end
+            end
+        else
+            term.setTextColor(colors.red)
+            printRight(arg[i],false,2+i)
+        end
+    end
+    term.setTextColor(textColor)
+    term.setCursorPos(x,y)
+end
+
+function findProgram(program)
+    local out
+    textutils.slowPrint('Research for "'..program..'" initialized...')
+    local dir = fs.find("programs/*/"..program.."*")
+    for _,v in pairs(dir) do
+        out = v
+    end
+    if out == nil or not string.find(out, program) then
+        dir = fs.find("programs/"..program.."*")
+        for _,v in pairs(dir) do
+            out = v
+        end
+        if out == nil or not string.find(out, program) then
+            error("Program not found :V")
+        end
+    end
+
+    print("Found Files:")
+    print("{")
+    for _,v in pairs(dir) do
+        term.setTextColor(colors.red)
+        term.write('  "'..v..'"')
+        term.setTextColor(colors.white)
+        print(",")
+        out = v
+    end
+    print("}")
+    sleep(1)
+
+    term.scroll(5)
+    local x,y = term.getCursorPos()
+    term.setCursorPos(1, y-5)
+    if #dir > 1 then
+        error("More than one file found :V")
+    end
+    return out
+end
+
+function initializeLOG(dir, maxBits)
+    if maxBits == nil then maxBits = 15000 end
+    if not fs.exists(dir..'data/log.log') then
+        print("Initializing LOG plugin...\nCreating a log.log file!")
+        createLog("LOG/INFO", "Initialized LOG", "w")
+    else
+        if fs.getSize(dir.."data/log.log") > maxBits then
+            fs.delete(dir.."data/log.log")
+            print("Deleting LOG file...\nCreating a new log.log file!")
+            createLog("LOG/INFO", "Initialized LOG", "w")
+        end
+    end
+end
+
+function createLog(item, data, dir, type, notify)
+    if dir == nil then dir = "" end
+    local time = os.date('*t')
+    local logData = "["..time.hour..":"..time.min..":"..time.sec.."] ["..item.."]: "..data
+    if not fs.exists(dir..'data') then
+        fs.makeDir(dir..'data')
+    end
+    local f
+    if not type then
+        if notify then
+            print("Creating LOG in "..dir.."data/log.log file to "..item)
+        end
+        f = fs.open(dir.."data/log.log", "a")
+        f.write("\n"..logData)
+    else
+        if notify then
+            print("Creating LOG in "..dir.."data/log.log file to "..item)
+        end
+        f = fs.open(dir.."data/log.log", type)
+        f.write(logData)
+    end
+    f.close()
+end
+
+--
+--while true do
+--    mon.clear()
+--    mon.setCursorPos(W, 1)
+--    mon.write(nome)
+--    for i = 1, W + nome:len() do
+--        mon.setCursorPos(W-i, 1)
+--        mon.clearLine()
+--        mon.write(nome:sub(1, i))
+--        sleep(0.2)
+--    end
+--end
+
+return Manager
