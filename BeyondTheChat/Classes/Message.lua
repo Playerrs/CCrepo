@@ -3,3 +3,23 @@
 --- Created by josue.
 --- DateTime: 12/04/2023 23:04
 ---
+
+local message = {}
+
+function message:new(chat, content, device)
+    local instance = {
+        chat = chat,
+        content = content,
+        device = device
+    }
+    setmetatable(instance, {__index = self})
+
+    return instance
+end
+
+function message:getChat()
+    return self.chat
+end
+
+
+return message

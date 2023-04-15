@@ -7,9 +7,22 @@
 --- Imports
 local args = {...}
 os.loadAPI("API/touchpoint")
-local modemAPI = require("../API/ModemAPI")
 local mon = peripheral.find("monitor")
+local modemAPI = require("../API/ModemAPI")
+
+--- Classes
+
+local Chat = require("../Classes/Chat")
+local Message = require("../Classes/Message")
+
 --- Load
 
 local tpMon = touchpoint.new("up")
 local modem = modemAPI.startModem(tonumber(args[1]))
+
+while true do
+    print("Reavkik")
+    local channel, receivedMessage = modemAPI.receive()
+    local ms = Message:new(Chat:new(receivedMessage.chat), receivedMessage.content, receivedMessage.device)
+    ms:getChat():addMessage(ms)
+end
