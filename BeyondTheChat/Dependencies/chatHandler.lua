@@ -8,7 +8,7 @@ local chatHandler = {dir = "Server/Chats/"}
 local json = require("../Dependencies/Json")
 
 function chatHandler.saveChat(chatObj)
-    local chatDir = chatHandler.dir..chatObj.id
+    local chatDir = chatHandler.dir..chatObj.id..".json"
     local f
     if not fs.exists(chatDir) then
         f = fs.open(chatDir, "w")
@@ -27,10 +27,10 @@ function chatHandler.saveChat(chatObj)
 end
 
 function chatHandler.decodeChat(id)
-    if type(id) ~= "number" or id < 11112then
+    if tonumber(id) < 11111 then
         return false
     end
-    local chatDir = chatHandler.dir..id
+    local chatDir = chatHandler.dir..id..".json"
     if fs.exists(chatDir) then
         local f = fs.open(chatDir, "r")
         --local chat = textutils.unserialize(f.readAll())

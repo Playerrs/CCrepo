@@ -28,11 +28,12 @@ local serverModem = modemAPI.startModem(_serverSettingPort)
 
 --- Functions
 
-local function create_chat(members)
+local function create_chat(members, replyChannel)
     math.randomseed(os.clock()*10000000)
     local id = math.random(11112, 99998)
     local chat = Chat:new(members, id, {Message:new("Novo Chat Criado, o id deste Chat é: "..id, Device:new("Admin", -1, 0))})
     chatHandler.saveChat(chat)
+    serverModem.transmit(replyChannel, _serverSettingPort, {"done", chat})
     return chat
 end
 
@@ -55,15 +56,16 @@ while true do
     print("------")
     local channel, receivedMessage, rChannel = modemAPI.receive()
     if channel == tonumber(args[1]) then
-        local ch = chatHandler.decodeChat(receivedMessage.id)
+        local ch = chatHandler.decodeChat(receivedMessage[2].id)
         if ch then
-            loadChat(ch)
+            ch = loadChat(ch)
         end
+        ch:addMessage(Message:new(receivedMessage[2].content, Device:new(receivedMessage[3].userName, receivedMessage[3].computerID, receivedMessage[3].modemPort)))
+        loadChat(ch)
 
     elseif channel == _serverSettingPort then
         if receivedMessage[1] == "create_chat" then
-
-
+            local chat = create_chat(receivedMessage[2].members, rChannel)
 
         elseif receivedMessage[1] == "enter_chat" then
             local _tryLoad = chatHandler.decodeChat(receivedMessage[2].id)
@@ -74,7 +76,7 @@ while true do
                 local chat = loadChat(_tryLoad)
                 chat:addMember(Device:new(receivedMessage[2].device.userName, receivedMessage[2].device.computerID, receivedMessage[2].device.modemPort))
                 chatHandler.saveChat(chat)
-
+                serverModem.transmit(rChannel, channel, {"done", chat})
 
             end
         end
