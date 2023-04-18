@@ -14,15 +14,31 @@ local modemAPI = require("../API/ModemAPI")
 
 local Chat = require("../Classes/Chat")
 local Message = require("../Classes/Message")
+local Device = require("../Classes/Device")
+
 
 --- Load
 
 local tpMon = touchpoint.new("up")
-local modem = modemAPI.startModem(tonumber(args[1]))
+local bridge = modemAPI.startModem(tonumber(args[1]))
+local _serverSettingPort = tonumber(args[1])+5
+local server = modemAPI.startModem(_serverSettingPort)
 
 while true do
-    print("Reavkik")
+    print("------")
     local channel, receivedMessage = modemAPI.receive()
-    local ms = Message:new(Chat:new(receivedMessage.chat), receivedMessage.content, receivedMessage.device)
-    ms:getChat():addMessage(ms)
+    if channel == tonumber(args[1]) then
+        local ch = Chat:new({}, receivedMessage.id, {})
+        for _,v in ipairs(receivedMessage.members) do
+            ch:addMember(Device:new(v.userName, v.computerID, v.modemPort))
+        end
+
+        for _,t in ipairs(receivedMessage.messages) do
+            local user = Device:new(t.device.userName, t.device.computerID, t.device.modemPort)
+            ch:addMessage(Message:new(t.content, user))
+        end
+
+    elseif channel == _serverSettingPort then
+
+    end
 end

@@ -7,9 +7,9 @@ local chat = {}
 
 function chat:new(members, id, messages)
     local instance = {
-        members = {},
-        id = "",
-        messages = {}
+        members = members or {},
+        id = id,
+        messages = messages or {}
 
     }
     setmetatable(instance, {__index = self})
@@ -17,12 +17,13 @@ function chat:new(members, id, messages)
     return instance
 end
 
-function chat:addMember(MemberObj)
-    table.insert(self.members, MemberObj)
+function chat:addMember(DeviceObj)
+    print(DeviceObj.userName, DeviceObj.computerID, DeviceObj.modemPort)
+    table.insert(self.members, DeviceObj)
 end
 
 function chat:addMessage(MessageObj)
-    print(MessageObj.content, MessageObj.device)
+    print(MessageObj.content, MessageObj.device:getUser())
     table.insert(self.messages, MessageObj)
 end
 

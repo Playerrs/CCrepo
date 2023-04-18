@@ -26,5 +26,9 @@ function device:getPort()
     return self.modemPort
 end
 
+function device:getUser()
+    return self.userName
+end
+
 
 return device

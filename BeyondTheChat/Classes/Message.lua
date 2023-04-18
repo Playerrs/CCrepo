@@ -6,9 +6,8 @@
 
 local message = {}
 
-function message:new(chat, content, device)
+function message:new(content, device)
     local instance = {
-        chat = chat,
         content = content,
         device = device
     }
