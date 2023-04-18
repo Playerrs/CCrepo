@@ -20,6 +20,8 @@ end
 --- Imports
 
 os.loadAPI("Dependencies/touchpoint")
+os.loadAPI("Dependencies/Manager.lua")
+local api = Manager
 local modemAPI = require("../Dependencies/ModemAPI")
 
 --- Classes
@@ -29,6 +31,8 @@ local Message = require("../Classes/Message")
 local Device = require("../Classes/Device")
 
 --- Load
+
+local W, H = term.getSize()
 
 local f = fs.open("Client/Cache", "r")
 local userName = f.readLine()
@@ -41,6 +45,33 @@ local screen = touchpoint.new()
 local modem = modemAPI.startModem(modemPort)
 
 --- Functions
+
+local function assemblyChat(chatObj)
+    local ch = Chat:new({}, chatObj.id, {})
+    for _,v in ipairs(chatObj.members) do
+        ch:addMember(Device:new(v.userName, v.computerID, v.modemPort))
+    end
+
+    for _,t in ipairs(chatObj.messages) do
+        local user = Device:new(t.device.userName, t.device.computerID, t.device.modemPort)
+        ch:addMessage(Message:new(t.content, user))
+    end
+
+    return ch
+end
+
+local function printChat(chatObj)
+    term.clear()
+    term.setCursorPos(1,1)
+    print(H, H/7, "Lines Chat: ".. chatObj.id)
+    for i = 1, #chatObj.messages do
+        print(chatObj.messages[i].device.userName)
+        print(chatObj.messages[i].content.. "\n")
+    end
+    sleep(30)
+end
+
+
 local function enterInAChat()
     term.clear()
     term.setCursorPos(1,1)
@@ -50,20 +81,56 @@ local function enterInAChat()
 
     local channel, receivedMessage, rChannel = modemAPI.receive()
 
+    if receivedMessage[1] == "error" then
+        print(receivedMessage[2])
+    else
+        printChat(assemblyChat(receivedMessage[2]))
+    end
 end
 
+local function sendMessage()
+    term.clear()
+    term.setCursorPos(1,1)
+    print("Digite uma mensagem que deseja enviar")
+    local msg = read()
+    print("Agora digite o id do chat para qual deseja enviar a mensagem!")
+    local idChat = read()
+    --local messageTest = Message:new(r, thisDevice)
+    --chatTest:addMessage(messageTest)
+    modem.transmit(20358, thisDevice.modemPort, {"send", { id = idChat, content = msg }, thisDevice})
+end
 
+local function createAChat()
+    term.clear()
+    term.setCursorPos(1,1)
+    print("Aperte enter para criar um chat! Ação temporariamente irreversível!")
+    local r = read()
+    modem.transmit(20358+5, thisDevice.modemPort, {"create_chat", {members = { thisDevice }}})
+    local channel, receivedMessage, rChannel = modemAPI.receive()
+
+    if receivedMessage[1] == "done" then
+        printChat(assemblyChat(receivedMessage[2]))
+    end
+end
 
 local chatTest = Chat:new({ thisDevice }, 1, {})
 
 while true do
     term.clear()
     term.setCursorPos(1,1)
-    --local r = read()
+    print("Digite enter, send ou create")
+    local r = read()
+    if r:sub(1, 4) == "crea" then
+        createAChat()
+    elseif r:sub(1, 4) == "ente" then
+        enterInAChat()
+    elseif r:sub(1, 4) == "send" then
+        sendMessage()
+    end
     --local messageTest = Message:new(r, thisDevice)
     --chatTest:addMessage(messageTest)
     --modem.transmit(20358, 20358+5, chatTest)
-    enterInAChat()
+
     sleep(2)
 
 end

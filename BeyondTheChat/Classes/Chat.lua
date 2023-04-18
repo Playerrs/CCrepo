@@ -25,14 +25,20 @@ function chat:new(members, id, messages)
 end
 
 function chat:addMember(DeviceObj)
-    print(DeviceObj.userName, DeviceObj.computerID, DeviceObj.modemPort)
-    table.insert(self.members, DeviceObj)
+    for k,v in pairs(self.members) do
+        if k == "userName" then
+            if v == DeviceObj.userName then
+                print(DeviceObj.userName, DeviceObj.computerID, DeviceObj.modemPort)
+                table.insert(self.members, DeviceObj)
+                return
+            end
+        end
+    end
 end
 
 function chat:addMessage(MessageObj)
     print(MessageObj.content, MessageObj.device:getUser())
     table.insert(self.messages, MessageObj)
 end
-
 
 return chat
