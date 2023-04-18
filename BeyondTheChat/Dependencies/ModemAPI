@@ -22,8 +22,9 @@ function api.receive()
     local e, p, channel, rChannel, message, distance = os.pullEvent("modem_message")
     if not message then
         api.receive()
+        return
     end
-    return channel, message
+    return channel, message, rChannel
 end
 
 return api

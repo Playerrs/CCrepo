@@ -12,14 +12,15 @@ if not fs.exists("Client/Cache") then
     local t = fs.open("Client/Cache", "w")
     t.writeLine(read())
     t.writeLine(os.getComputerID())
+    math.randomseed(os.clock()*10000000)
     t.writeLine(math.random(1050, 65200))
     t.close()
 end
 
 --- Imports
 
-os.loadAPI("API/touchpoint")
-local modemAPI = require("../API/ModemAPI")
+os.loadAPI("Dependencies/touchpoint")
+local modemAPI = require("../Dependencies/ModemAPI")
 
 --- Classes
 
@@ -43,8 +44,12 @@ local modem = modemAPI.startModem(modemPort)
 local function enterInAChat()
     term.clear()
     term.setCursorPos(1,1)
-    print("Digite um numero de chat Para entrar")
+    print("Digite o id do chat para entrar")
     local r = read()
+    modem.transmit(20358+5, thisDevice.modemPort, {"enter_chat", {id = r, device = thisDevice}})
+
+    local channel, receivedMessage, rChannel = modemAPI.receive()
+
 end
 
 
@@ -54,10 +59,11 @@ local chatTest = Chat:new({ thisDevice }, 1, {})
 while true do
     term.clear()
     term.setCursorPos(1,1)
-    local r = read()
-    local messageTest = Message:new(r, thisDevice)
-    chatTest:addMessage(messageTest)
-    modem.transmit(20358, 21358, chatTest)
+    --local r = read()
+    --local messageTest = Message:new(r, thisDevice)
+    --chatTest:addMessage(messageTest)
+    --modem.transmit(20358, 20358+5, chatTest)
+    enterInAChat()
     sleep(2)
 
 end

@@ -3,13 +3,20 @@
 --- Created by josue.
 --- DateTime: 14/04/2023 08:51
 ---
-local chat = {}
+
+--local chatHandler = require("../Dependencies/chatHandler")
+
+local chat = {members = {{userName = "Admin",
+                          computerID = -1,
+                          modemPort = 0}},
+              messages = {}
+}
 
 function chat:new(members, id, messages)
     local instance = {
-        members = members or {},
+        members = members,
         id = id,
-        messages = messages or {}
+        messages = messages
 
     }
     setmetatable(instance, {__index = self})

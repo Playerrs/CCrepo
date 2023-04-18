@@ -4,7 +4,7 @@
 --- DateTime: 11/04/2023 21:09
 ---
 
-os.loadAPI('/API/Manager.lua')
+os.loadAPI('/Dependencies/Manager.lua')
 local api = Manager
 settings.load(".settings")
 --settings.set("default-port", 20358)
