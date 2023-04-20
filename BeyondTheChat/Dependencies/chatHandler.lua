@@ -20,23 +20,23 @@ function chatHandler.saveChat(chatObj)
     end
 
     f = fs.open(chatDir, "w")
-    --f.write(textutils.serialize(chatObj))
     f.write(json.encode(chatObj))
     f.flush()
     f.close()
 end
 
 function chatHandler.decodeChat(id)
-    if tonumber(id) < 11111 then
-        return false
-    end
-    local chatDir = chatHandler.dir..id..".json"
-    if fs.exists(chatDir) then
-        local f = fs.open(chatDir, "r")
-        --local chat = textutils.unserialize(f.readAll())
-        local chat = json.decode(f.readAll())
-        f.close()
-        return chat
+    if id ~= nil and id ~= "" and id ~= " "then
+        if tonumber(id) < 11111 then
+            return false
+        end
+        local chatDir = chatHandler.dir..id..".json"
+        if fs.exists(chatDir) then
+            local f = fs.open(chatDir, "r")
+            local chat = json.decode(f.readAll())
+            f.close()
+            return chat
+        end
     end
 
     return false

@@ -31,14 +31,14 @@ local serverModem = modemAPI.startModem(_serverSettingPort)
 local function create_chat(members, replyChannel)
     math.randomseed(os.clock()*10000000)
     local id = math.random(11112, 99998)
-    local chat = Chat:new(members, id, {Message:new("Novo Chat Criado, o id deste Chat é: "..id, Device:new("Admin", -1, 0))})
+    local chat = Chat:new(tostring(id), id, members, {Message:new("Novo Chat Criado, o id deste Chat é: "..id, Device:new("Admin", -1, 0))})
     chatHandler.saveChat(chat)
     serverModem.transmit(replyChannel, _serverSettingPort, {"done", chat})
     return chat
 end
 
 local function loadChat(chatObj)
-    local ch = Chat:new({}, chatObj.id, {})
+    local ch = Chat:new(chatObj.name, chatObj.id, {}, {})
     for _,v in ipairs(chatObj.members) do
         ch:addMember(Device:new(v.userName, v.computerID, v.modemPort))
     end
@@ -65,6 +65,7 @@ while true do
 
     elseif channel == _serverSettingPort then
         if receivedMessage[1] == "create_chat" then
+            print(receivedMessage[2].members[1].userName)
             local chat = create_chat(receivedMessage[2].members, rChannel)
 
         elseif receivedMessage[1] == "enter_chat" then

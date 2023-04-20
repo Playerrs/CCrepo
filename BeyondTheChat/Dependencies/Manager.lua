@@ -128,6 +128,7 @@ function getInputKey(maxOptions, var)
 end
 
 function reset()
+    term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(1,1)
 end
