@@ -56,16 +56,24 @@ while true do
     print("------")
     local channel, receivedMessage, rChannel = modemAPI.receive()
     if channel == tonumber(args[1]) then
-        local ch = chatHandler.decodeChat(receivedMessage[2].id)
-        if ch then
-            ch = loadChat(ch)
-            ch:addMessage(Message:new(receivedMessage[2].content, Device:new(receivedMessage[3].userName, receivedMessage[3].computerID, receivedMessage[3].modemPort)))
-            loadChat(ch)
+        if receivedMessage[1] == "sent_message" then
+            local ch = chatHandler.decodeChat(receivedMessage[2].id)
+            if ch then
+                ch = loadChat(ch)
+                ch:addMessage(Message:new(receivedMessage[2].content, Device:new(receivedMessage[3].userName, receivedMessage[3].computerID, receivedMessage[3].modemPort)))
+                loadChat(ch)
+
+                for i = 1, #ch.members do
+                    --if ch.members[i].userName ~= receivedMessage[3].userName then
+                        bridgeModem.transmit(ch.members[i].modemPort, channel, {"new_message", ch})
+                    --end
+                end
+            end
         end
 
     elseif channel == _serverSettingPort then
         if receivedMessage[1] == "create_chat" then
-            print(receivedMessage[2].members[1].userName)
+            print("# Chat Criado por "..receivedMessage[2].members[1].userName)
             local chat = create_chat(receivedMessage[2].members, rChannel)
 
         elseif receivedMessage[1] == "enter_chat" then
@@ -75,7 +83,17 @@ while true do
                 serverModem.transmit(rChannel, channel, {"error", "Nenhum chat com este id encontrado!"})
             else
                 local chat = loadChat(_tryLoad)
-                chat:addMember(Device:new(receivedMessage[2].device.userName, receivedMessage[2].device.computerID, receivedMessage[2].device.modemPort))
+
+                local has_device = false
+                for i =1, #chat.members do
+                    print("ATENÇAO: ".. chat.members[i].userName .. "  ".. receivedMessage[2].device.userName)
+                    if chat.members[i].userName == receivedMessage[2].device.userName then
+                        has_device = true
+                    end
+                end
+                if not has_device then
+                    chat:addMember(Device:new(receivedMessage[2].device.userName, receivedMessage[2].device.computerID, receivedMessage[2].device.modemPort))
+                end
                 chatHandler.saveChat(chat)
                 serverModem.transmit(rChannel, channel, {"done", chat})
 

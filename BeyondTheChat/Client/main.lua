@@ -36,24 +36,46 @@ local Device = require("../Classes/Device")
 local W, H = term.getSize()
 local dataDir = "Client/data/"
 
-local cacheChats = Chat.loadJSON(dataDir)
-
 local __f = fs.open("Client/Cache", "r")
 local userName = __f.readLine()
 local computerID = tonumber(__f.readLine())
 local modemPort = tonumber(__f.readLine())
 __f.close()
 
+local defaultColor = colors.blue
+local defaultFlashCo = colors.white
+
 local thisDevice = Device:new(userName, computerID, modemPort)
 local modem = modemAPI.startModem(modemPort)
 
 --- Screen
 
-local menu = touchpoint.new()
-local listChats = touchpoint.new()
-local options = touchpoint.new()
+local menu_touch = touchpoint.new()
+local listChats_touch = touchpoint.new()
+local chat_touch = touchpoint.new()
+local chatSettings_touch = touchpoint.new()
 
 --- Functions
+
+local function getUserInput()
+    local x, y = 1, math.floor((H/2)-3)
+    term.setBackgroundColor(defaultColor)
+
+    for _width = 1, W do
+        for _height = y, y+4 do
+            if _width == 1 or _width == W then term.setBackgroundColor(defaultFlashCo) end
+            if _height == y or _height == y+4 then term.setBackgroundColor(defaultFlashCo) end
+
+            term.setCursorPos(_width, _height)
+            term.write(" ")
+            term.setBackgroundColor(defaultColor)
+        end
+    end
+    term.setCursorPos(x+1, y+2)
+    term.write("> ")
+    local msg = read()
+    return msg
+end
 
 local function constructorChat(chatObj)
     local ch = Chat:new(chatObj.name, chatObj.id, {}, {})
@@ -69,18 +91,73 @@ local function constructorChat(chatObj)
     return ch
 end
 
-local function printChat(chatObj)
-    term.clear()
-    term.setCursorPos(1,1)
-    print("Chat: ".. chatObj.id)
-    for i = 1, #chatObj.messages do
-        print(chatObj.messages[i].device.userName)
-        print(chatObj.messages[i].content.. "\n")
-    end
-    sleep(5)
+local function chatSettings(chatObj)
+    api.reset()
+    chat_touch = touchpoint.new()
+
+    chat_touch:add("Voltar", function()
+        chat_touch:flash("Voltar", 0.5)
+        listChats()
+    end, 1, H-2, 8, H, defaultColor, defaultFlashCo)
+
+    --chat_touch:add("Config", function()
+    --    chat_touch:flash("Config", 0.5)
+    --    chatSettings(chatObj)
+    --end, math.floor((W/2)-3), H-2, math.floor((W/2)+4), H, defaultColor, defaultFlashCo)
+
+    chat_touch:add("Salvar", function()
+        chat_touch:flash("Salvar", 0.5)
+    end, W-7, H-2, W, H, defaultColor, defaultFlashCo)
+
+    --chat_touch:run(function()
+    runtime(chat_touch, function()
+        term.setCursorPos(1, 1)
+        term.setBackgroundColor(defaultColor)
+        print(" "..chatObj.name.. string.rep(" ", W-(#chatObj.name)) .. "\n")
+        term.setBackgroundColor(colors.black)
+
+        for i = 1, #chatObj.messages do
+            print(chatObj.messages[i].device.userName)
+            print(chatObj.messages[i].content.. "\n")
+        end
+    end)
 end
 
-local function enterInAChat(num)
+local function printChat(chatObj)
+    api.reset()
+    chat_touch = touchpoint.new()
+
+    chat_touch:add("Voltar", function()
+        chat_touch:flash("Voltar", 0.5)
+        listChats()
+    end, 1, H-2, 8, H, defaultColor, defaultFlashCo)
+
+    chat_touch:add("Config", function()
+        chat_touch:flash("Config", 0.5)
+        chatSettings(chatObj)
+    end, math.floor((W/2)-3), H-2, math.floor((W/2)+4), H, defaultColor, defaultFlashCo)
+
+    chat_touch:add("Escrever", function()
+        chat_touch:flash("Escrever", 0.5)
+        modem.transmit(20358, thisDevice.modemPort, {"sent_message", { id = chatObj.id, content = getUserInput() }, thisDevice})
+        printChat(chatObj)
+        return
+    end, W-8, H-2, W, H, defaultColor, defaultFlashCo)
+
+    runtime(chat_touch, function()
+        term.setCursorPos(1, 1)
+        term.setBackgroundColor(defaultColor)
+        print(" "..chatObj.name.. string.rep(" ", W-(#chatObj.name)) .. "\n")
+        term.setBackgroundColor(colors.black)
+
+        for i = 1, #chatObj.messages do
+            print(chatObj.messages[i].device.userName)
+            print(chatObj.messages[i].content.. "\n")
+        end
+    end)
+end
+
+function requestChat(num)
     term.clear()
     term.setCursorPos(1,1)
     modem.transmit(20358+5, thisDevice.modemPort, {"enter_chat", {id = num, device = thisDevice}})
@@ -89,19 +166,11 @@ local function enterInAChat(num)
 
     if receivedMessage[1] == "error" then
         print(receivedMessage[2])
+        sleep(5)
     else
         Chat.saveJSON(receivedMessage[2].name, receivedMessage[2].id, dataDir)
         printChat(constructorChat(receivedMessage[2]))
     end
-end
-
-local function sendMessage()
-    api.reset()
-    print("Digite uma mensagem que deseja enviar")
-    local msg = read()
-    print("Agora digite o id do chat para qual deseja enviar a mensagem!")
-    local idChat = read()
-    modem.transmit(20358, thisDevice.modemPort, {"send", { id = idChat, content = msg }, thisDevice})
 end
 
 local function createAChat()
@@ -110,42 +179,111 @@ local function createAChat()
     local channel, receivedMessage, rChannel = modemAPI.receive()
 
     if receivedMessage[1] == "done" then
-        enterInAChat(receivedMessage[2].id)
+        requestChat(receivedMessage[2].id)
         --printChat(constructorChat(receivedMessage[2]))
     end
 end
 
+function listChats()
+    local list = Chat.loadJSON(dataDir)
+    local separator = {}
+    print(string.rep("-", W))
+    table.insert(separator, {x = 1, y = 1})
+    local x, y = 1, 2
+    local n = 0
 
-menu:add("Novo", function()
-    menu:flash("Novo", 0.5)
+    listChats_touch = touchpoint.new()
+
+    if list then
+        for k,v in pairs(list) do
+            n = n+1
+            if n <= 7 then
+                listChats_touch:add(k, function()
+                    listChats_touch:flash(k, 0.5)
+                    api.reset()
+                    requestChat(v)
+                end, x, y-1, W, y+1, defaultColor, defaultFlashCo)
+                table.insert(separator, {x = x, y = y+2})
+                y = y+3
+            end
+        end
+    end
+
+    listChats_touch:add("Voltar", function()
+        listChats_touch:flash("Voltar", 0.5)
+        runtime(menu_touch)
+
+        end, 1, H-2, 8, H, defaultColor, defaultFlashCo)
+
+    --listChats_touch:add("Prox", function()
+    --    listChats_touch:flash("Prox", 0.5)
+    --    menu_touch:run(function()  end)
+    --end, W-6, H-2, W, H, defaultColor, defaultFlashCo)
+
+
+    runtime(listChats_touch, function()
+        for i = 1, #separator do
+            --term.setBackgroundColor(colors.black)
+            term.setCursorPos(separator[i].x, separator[i].y)
+            term.write(string.rep("-", W))
+        end
+        if not list then
+            print("Você ainda não está em nenhum servidor V:")
+        end
+    end)
+end
+
+local function waitUpdate()
+    local channel, receivedMessage, rChannel = modemAPI.receive()
+    if receivedMessage[1] == "new_message" then
+        printChat(receivedMessage[2])
+        return
+    else
+        waitUpdate()
+        return
+    end
+end
+
+function runtime(self, func)
+    self:draw()
+    if func then func() end
+    while true do
+        local event, button = self:handleEvents(os.pullEvent())
+        if event == "button_click" then
+            local function callEvent()
+                self.buttonList[button].func()
+                --waitFinish()
+            end
+
+            parallel.waitForAny(callEvent, waitUpdate)
+        end
+
+        self:draw()
+        if func then func() end
+    end
+end
+
+menu_touch:add("Novo", function()
+    menu_touch:flash("Novo", 0.5)
     createAChat()
-end, math.floor(W/4), 3, math.floor((W/2)-2), 5, colors.blue, colors.green)
+end, 1, H-2, 6, H, defaultColor, defaultFlashCo)
 
-menu:add("Entrar", function()
-    menu:flash("Entrar", 0.5)
+menu_touch:add("Entrar", function()
+    menu_touch:flash("Entrar", 0.5)
     api.reset()
     print("Digite o id do chat!")
-    enterInAChat(read())
-end, math.floor((W/2)+2), 3, math.floor((W/4)*3), 5, colors.blue, colors.green)
+    requestChat(getUserInput())
+end, math.floor((W/2)-4), H-2, math.floor((W/2)+4), H, defaultColor, defaultFlashCo)
 
-menu:add("Lista", function()
-    menu:flash("Lista", 0.5)
-    --- TODO
-end, math.floor(W/4), 7, math.floor((W/2)-2), 9, colors.blue, colors.green)
+menu_touch:add("Lista", function()
+    menu_touch:flash("Lista", 0.5)
+    api.reset()
+    listChats()
+end, W-6, H-2, W, H, defaultColor, defaultFlashCo)
 
 while true do
     api.reset()
-    menu:run(function()
-    end)
-    --print("Digite enter, send ou create")
-    --local r = read()
-    --if r:sub(1, 4) == "crea" then
-    --    createAChat()
-    --elseif r:sub(1, 4) == "ente" then
-    --    enterInAChat()
-    --elseif r:sub(1, 4) == "send" then
-    --    sendMessage()
-    --end
+    runtime(menu_touch)
 
     sleep(2)
 
