@@ -54,14 +54,24 @@ end
 function chat.saveJSON(chatName, chatNum, _dataDir)
     local _f
     local data = {}
-    chatNum = chatNum * 3
+    local codedNum = chatNum * 3
     if fs.exists(_dataDir.."servers.json") then
         _f = fs.open(_dataDir.."servers.json", "r")
         data = json.decode(_f.readAll())
-        data[chatName] = chatNum
+        --if data[chatNum] then
+        --    print("T")
+        --    sleep(2)
+        --    data[chatNum] = nil
+        --end
+        for k,v in pairs(data) do
+            if v == codedNum then
+                data[k] = nil
+            end
+        end
+        data[chatName] = codedNum
         _f.close()
     else
-        data[chatName] = chatNum
+        data[chatName] = codedNum
     end
 
     _f = fs.open(_dataDir.."servers.json", "w")

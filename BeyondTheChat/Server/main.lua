@@ -19,7 +19,8 @@ local Device = require("../Classes/Device")
 
 
 --- Load
-
+---
+local W, H = term.getSize()
 local tpMon = touchpoint.new("up")
 local bridgeModem = modemAPI.startModem(tonumber(args[1]))
 local _serverSettingPort = tonumber(args[1])+5
@@ -52,8 +53,10 @@ local function loadChat(chatObj)
     return ch
 end
 
+term.clear()
+term.setCursorPos(1, 1)
 while true do
-    print("------")
+    print(string.rep("-", W))
     local channel, receivedMessage, rChannel = modemAPI.receive()
     if channel == tonumber(args[1]) then
         if receivedMessage[1] == "sent_message" then
@@ -61,7 +64,7 @@ while true do
             if ch then
                 ch = loadChat(ch)
                 ch:addMessage(Message:new(receivedMessage[2].content, Device:new(receivedMessage[3].userName, receivedMessage[3].computerID, receivedMessage[3].modemPort)))
-                loadChat(ch)
+                ch = loadChat(ch)
 
                 for i = 1, #ch.members do
                     --if ch.members[i].userName ~= receivedMessage[3].userName then
@@ -73,8 +76,8 @@ while true do
 
     elseif channel == _serverSettingPort then
         if receivedMessage[1] == "create_chat" then
-            print("# Chat Criado por "..receivedMessage[2].members[1].userName)
             local chat = create_chat(receivedMessage[2].members, rChannel)
+            print("[#] "..chat.id.." chat criado por "..receivedMessage[2].members[1].userName)
 
         elseif receivedMessage[1] == "enter_chat" then
             local _tryLoad = chatHandler.decodeChat(receivedMessage[2].id)
@@ -86,7 +89,6 @@ while true do
 
                 local has_device = false
                 for i =1, #chat.members do
-                    print("ATENÇAO: ".. chat.members[i].userName .. "  ".. receivedMessage[2].device.userName)
                     if chat.members[i].userName == receivedMessage[2].device.userName then
                         has_device = true
                     end
@@ -98,6 +100,11 @@ while true do
                 serverModem.transmit(rChannel, channel, {"done", chat})
 
             end
+
+        elseif receivedMessage[1] == "modify_chat" then
+            local _tryLoad = chatHandler.decodeChat(receivedMessage[2].id)
+            print("[NAME] ".._tryLoad.name.." mudado para: "..receivedMessage[2].name)
+            chatHandler.saveChat(receivedMessage[2])
         end
     end
 end

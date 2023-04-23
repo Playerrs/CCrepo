@@ -42,8 +42,8 @@ local computerID = tonumber(__f.readLine())
 local modemPort = tonumber(__f.readLine())
 __f.close()
 
-local defaultColor = colors.blue
-local defaultFlashCo = colors.white
+local defaultColor = colors.green
+local defaultFlashCo = colors.orange
 
 local thisDevice = Device:new(userName, computerID, modemPort)
 local modem = modemAPI.startModem(modemPort)
@@ -93,37 +93,54 @@ end
 
 local function chatSettings(chatObj)
     api.reset()
-    chat_touch = touchpoint.new()
+    chatSettings_touch = touchpoint.new()
 
-    chat_touch:add("Voltar", function()
-        chat_touch:flash("Voltar", 0.5)
-        listChats()
+    chatSettings_touch:add("Voltar", function()
+        chatSettings_touch:flash("Voltar", 0.5)
+        printChat(chatObj)
     end, 1, H-2, 8, H, defaultColor, defaultFlashCo)
 
-    --chat_touch:add("Config", function()
-    --    chat_touch:flash("Config", 0.5)
-    --    chatSettings(chatObj)
-    --end, math.floor((W/2)-3), H-2, math.floor((W/2)+4), H, defaultColor, defaultFlashCo)
+    chatSettings_touch:add("Salvar", function()
+        chatSettings_touch:flash("Salvar", 0.5)
+        modem.transmit(20358+5, thisDevice.modemPort, {"modify_chat", chatObj})
+        Chat.saveJSON(chatObj.name, chatObj.id, dataDir)
+    end, W-8, H-2, W, H, defaultColor, defaultFlashCo)
 
-    chat_touch:add("Salvar", function()
-        chat_touch:flash("Salvar", 0.5)
-    end, W-7, H-2, W, H, defaultColor, defaultFlashCo)
+
+
+    chatSettings_touch:add("Mudar", function()
+        chatSettings_touch:flash("Mudar", 0.5)
+        chatObj.name = getUserInput()
+
+    end, W-10, 3, W-2, 3, defaultColor, defaultFlashCo)
+
+    chatSettings_touch:add("Revelar", function()
+        if chatSettings_touch:thisExists("Revelar") then
+            chatSettings_touch:flash("Revelar", 0.5)
+            chatSettings_touch:rename("Revelar", tostring(chatObj.id))
+        else
+            chatSettings_touch:flash(tostring(chatObj.id), 0.5)
+            chatSettings_touch:rename(tostring(chatObj.id), "Revelar")
+        end
+    end, W-10, 5, W-2, 5, defaultColor, defaultFlashCo)
 
     --chat_touch:run(function()
-    runtime(chat_touch, function()
+    runtime(chatSettings_touch, function()
         term.setCursorPos(1, 1)
         term.setBackgroundColor(defaultColor)
         print(" "..chatObj.name.. string.rep(" ", W-(#chatObj.name)) .. "\n")
         term.setBackgroundColor(colors.black)
 
-        for i = 1, #chatObj.messages do
-            print(chatObj.messages[i].device.userName)
-            print(chatObj.messages[i].content.. "\n")
-        end
+        term.setCursorPos(2, 3)
+        term.write("Nome do chat: ")
+
+        term.setCursorPos(2, 5)
+        term.write("ID do chat: ")
+
     end)
 end
 
-local function printChat(chatObj)
+function printChat(chatObj)
     api.reset()
     chat_touch = touchpoint.new()
 
@@ -141,7 +158,6 @@ local function printChat(chatObj)
         chat_touch:flash("Escrever", 0.5)
         modem.transmit(20358, thisDevice.modemPort, {"sent_message", { id = chatObj.id, content = getUserInput() }, thisDevice})
         printChat(chatObj)
-        return
     end, W-8, H-2, W, H, defaultColor, defaultFlashCo)
 
     runtime(chat_touch, function()
