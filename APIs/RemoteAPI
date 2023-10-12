@@ -1,10 +1,27 @@
 -- Created by Player_rs
 -- License MIT
--- V: 0.5
+-- V: 0.6
 
 local remoteAPI = {}
 remoteAPI.__index = remoteAPI
 
+function remoteAPI.new(name, channel)
+    local self = {
+        name = name,
+        channel = channel,
+        modem = peripheral.find("modem"),
+        lastMessages = {},
+        typed = "",
+        previousSent = {},
+    }
+
+    self.modem.open(channel)
+
+
+
+    setmetatable(self, remoteAPI)
+    return self
+end
 
 local __keysBlackList = {
     "CapsLock",
@@ -13,12 +30,39 @@ local __keysBlackList = {
     "rightCtrl",
     "leftAlt",
     "rightAlt",
-    --"leftShift",
+    "leftShift",
     "rightShift",
     "unknownKey"
 }
 
-local function parseTyped(str, key)
+local function limitedTable(t, insertion)
+    table.insert(t, insertion)
+    if #t > 16 then
+        repeat
+            table.remove(t, 1)
+        until #t <= 16
+    end
+    return t
+end
+
+local function sendMessage(self, str)
+    self.modem.transmit(self.channel, self.channel, str)
+    noLargeCache(self.previousSent, str)
+    self.typed = ""
+end
+
+local function parseTyped(self, str, key)
+    for i = 1, #__keysBlackList do
+        if str == __keysBlackList[i] then
+            return str
+        end
+    end
+
+    if str == "enter" or str == "numPadEnter" then
+        sendMessage(self, self.typed)
+        return str
+    end
+
     if key == "space" then
         return str .. " "
     elseif key == "enter" then
@@ -51,6 +95,10 @@ local function parseTyped(str, key)
         return str .. "-"
     elseif key == "numPadAdd" then
         return str .. "+"
+    elseif key == "slash" then
+        return str .. ":"
+    elseif key == "semicolon" then
+        return str .. "_"
 
 
 
@@ -58,32 +106,6 @@ local function parseTyped(str, key)
         return str .. key
     end
 end
-
-local function sendMessage(self, str)
-    self.modem.transmit(self.channel, self.channel, str)
-    table.insert(self.previousSent, str)
-    self.typed = ""
-end
-
-function remoteAPI.new(name, channel)
-    local self = {
-        name = name,
-        channel = channel,
-        modem = peripheral.find("modem"),
-        lastMessages = {},
-        typed = "",
-        previousSent = {},
-    }
-
-    self.modem.open(channel)
-
-
-
-    setmetatable(self, remoteAPI)
-    return self
-end
-
-
 
 function remoteAPI:run(self, func)
 
@@ -93,27 +115,16 @@ function remoteAPI:run(self, func)
             self.waitUpdate()
             return
         end
-        table.insert(self.lastMessages, message)
+        limitedTable(self.lastMessages, message)
         return
     end
 
     local function waitKey()
         local _, key = os.pullEvent("key_up")
         local name = keys.getName(key) or "unknownKey"
-        local isBlackListed = false
-        for i = 1, #__keysBlackList do
-            if name == __keysBlackList[i] then
-                isBlackListed = true
-                break
-            end
-        end
-        if name == "enter" or name == "numPadEnter" then
-            sendMessage(self, self.typed)
-            return
-        end
-        if not isBlackListed then
-            self.typed = parseTyped(self.typed, name)
-        end
+
+        self.typed = parseTyped(self, self.typed, name)
+
     end
 
     while true do

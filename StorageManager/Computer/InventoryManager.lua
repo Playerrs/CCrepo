@@ -1,6 +1,6 @@
 -- Created by Player_rs
 -- License MIT
--- V: 2.6
+-- V: 2.7
 -- Supports AE2 and Refined Storage
 -- Supports ChatBox (Advanced Peripheral) and PocketAPI (URL)
 
@@ -420,7 +420,7 @@ while true do
         table.insert(args, argumentos)
     end
 
-    if player == Player then
+    if player == Player or cb == nil then
         for _, comando in ipairs(commands) do
             if args[1] == comando.chat then
                 for k,v in pairs(functions) do
