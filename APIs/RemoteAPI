@@ -1,0 +1,130 @@
+-- Created by Player_rs
+-- License MIT
+-- V: 0.5
+
+local remoteAPI = {}
+remoteAPI.__index = remoteAPI
+
+
+local __keysBlackList = {
+    "CapsLock",
+    "tab",
+    "leftCtrl",
+    "rightCtrl",
+    "leftAlt",
+    "rightAlt",
+    --"leftShift",
+    "rightShift",
+    "unknownKey"
+}
+
+local function parseTyped(str, key)
+    if key == "space" then
+        return str .. " "
+    elseif key == "enter" then
+        return str
+    elseif key == "backspace" then
+        return string.sub(str, 1, #str-1)
+    elseif key == "zero" or key == "numPad0" then
+        return str .. "0"
+    elseif key == "one" or key == "numPad1" then
+        return str .. "1"
+    elseif key == "two" or key == "numPad2" then
+        return str .. "2"
+    elseif key == "three" or key == "numPad3" then
+        return str .. "3"
+    elseif key == "four" or key == "numPad4" then
+        return str .. "4"
+    elseif key == "five" or key == "numPad5" then
+        return str .. "5"
+    elseif key == "six" or key == "numPad6" then
+        return str .. "6"
+    elseif key == "seven" or key == "numPad7" then
+        return str .. "7"
+    elseif key == "eight" or key == "numPad8" then
+        return str .. "8"
+    elseif key == "nine" or key == "numPad9" then
+        return str .. "9"
+    elseif key == "equals" then
+        return str .. "="
+    elseif key == "minus" then
+        return str .. "-"
+    elseif key == "numPadAdd" then
+        return str .. "+"
+
+
+
+    else
+        return str .. key
+    end
+end
+
+local function sendMessage(self, str)
+    self.modem.transmit(self.channel, self.channel, str)
+    table.insert(self.previousSent, str)
+    self.typed = ""
+end
+
+function remoteAPI.new(name, channel)
+    local self = {
+        name = name,
+        channel = channel,
+        modem = peripheral.find("modem"),
+        lastMessages = {},
+        typed = "",
+        previousSent = {},
+    }
+
+    self.modem.open(channel)
+
+
+
+    setmetatable(self, remoteAPI)
+    return self
+end
+
+
+
+function remoteAPI:run(self, func)
+
+    local function waitMessage()
+        local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+        if channel ~= self.channel then
+            self.waitUpdate()
+            return
+        end
+        table.insert(self.lastMessages, message)
+        return
+    end
+
+    local function waitKey()
+        local _, key = os.pullEvent("key_up")
+        local name = keys.getName(key) or "unknownKey"
+        local isBlackListed = false
+        for i = 1, #__keysBlackList do
+            if name == __keysBlackList[i] then
+                isBlackListed = true
+                break
+            end
+        end
+        if name == "enter" or name == "numPadEnter" then
+            sendMessage(self, self.typed)
+            return
+        end
+        if not isBlackListed then
+            self.typed = parseTyped(self.typed, name)
+        end
+    end
+
+    while true do
+        parallel.waitForAny(waitMessage, waitKey)
+        if func then func() end
+    end
+end
+
+
+function remoteAPI:getLastMessages()
+    return self.lastMessages
+end
+
+return remoteAPI
