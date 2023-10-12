@@ -1,6 +1,6 @@
 -- By Player_rs
 -- License MIT
--- V 1.0
+-- V 1.1
 
 local api = {}
 
@@ -23,7 +23,7 @@ function api.receive()
     if not message then
         api.receive()
     end
-    return channel, message
+    return channel, message, rChannel
 end
 
 return api
