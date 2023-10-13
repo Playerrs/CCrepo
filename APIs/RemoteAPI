@@ -47,8 +47,7 @@ end
 
 local function sendMessage(self, str)
     self.modem.transmit(self.channel, self.channel, str)
-    noLargeCache(self.previousSent, str)
-    self.typed = ""
+    limitedTable(self.previousSent, str)
 end
 
 local function parseTyped(self, str, key)
@@ -58,15 +57,13 @@ local function parseTyped(self, str, key)
         end
     end
 
-    if str == "enter" or str == "numPadEnter" then
+    if key == "enter" or key == "numPadEnter" then
         sendMessage(self, self.typed)
-        return str
+        return ""
     end
 
     if key == "space" then
         return str .. " "
-    elseif key == "enter" then
-        return str
     elseif key == "backspace" then
         return string.sub(str, 1, #str-1)
     elseif key == "zero" or key == "numPad0" then
@@ -124,7 +121,7 @@ function remoteAPI:run(self, func)
         local name = keys.getName(key) or "unknownKey"
 
         self.typed = parseTyped(self, self.typed, name)
-
+        return
     end
 
     while true do

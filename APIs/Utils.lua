@@ -1,3 +1,7 @@
+-- Created by Player_rs
+-- License MIT
+-- V: 1.5
+
 local version = "1.5"
 
 function serialize(data, name)

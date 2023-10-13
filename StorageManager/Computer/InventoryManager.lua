@@ -2,7 +2,7 @@
 -- License MIT
 -- V: 2.7
 -- Supports AE2 and Refined Storage
--- Supports ChatBox (Advanced Peripheral) and PocketAPI (URL)
+-- Supports ChatBox (Advanced Peripheral) and RemoteAPI (https://github.com/Playerrs/CCrepo/blob/master/APIs/RemoteAPI)
 
 
 local langs = {
