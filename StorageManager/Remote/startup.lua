@@ -26,7 +26,7 @@ local backgroundColor = colors.green
 local W, H = term.getSize()
 
 -- create a RemoteAPI object
-local pocket = remote.new("Sla", 1551)
+local pocket = remote.new("Sla", 1520)
 
 -- menus
 local main_menu = tp.new()
@@ -34,27 +34,38 @@ local main_menu = tp.new()
 -- screen
 local function background()
     utils.reset()
-
-    local rows
+    local _color = term.getBackgroundColor()
+    local rows = 1
     for iH = 1, rows do
         for iW = 1, W do
             term.setCursorPos(iW, iH)
+            term.setBackgroundColor(backgroundColor)
             term.write(" ")
         end
     end
+
+    term.setBackgroundColor(_color)
+    term.setCursorPos(1, 3)
 end
 
 main_menu:add("Butão", function()
     error("So de zueira")
-end, 1, 1, 7, 1, colors.white, backgroundColor)
+end, 1, 1, 7, 1, backgroundColor, backgroundColor)
 
 -- RemoteAPI Runtime
 pocket:run(pocket, function()
+    local _color = term.getBackgroundColor()
+
     background()
     main_menu:draw()
+
+    term.setBackgroundColor(_color)
+    term.setCursorPos(1, 3)
+
     for k,v in pairs(pocket.lastMessages)do
         print(v)
     end
-    print("-----")
-    print(pocket.typed)
+
+    term.setCursorPos(1, H)
+    term.write("> " .. pocket.typed)
 end)

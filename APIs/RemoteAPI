@@ -52,7 +52,7 @@ end
 
 local function parseTyped(self, str, key)
     for i = 1, #__keysBlackList do
-        if str == __keysBlackList[i] then
+        if key == __keysBlackList[i] then
             return str
         end
     end
