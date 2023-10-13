@@ -15,7 +15,8 @@ if not fs.exists('deps/Utils') then
 end
 
 -- load requirements
-local tp = require('/deps/touchpoint')
+os.loadAPI('/deps/touchpoint')
+local tp = touchpoint
 local remote = require('/deps/RemoteAPI')
 os.loadAPI('/deps/Utils')
 local utils = Utils
