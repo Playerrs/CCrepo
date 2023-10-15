@@ -1,6 +1,6 @@
 -- Created by Player_rs
 -- License MIT
--- V: 1.5
+-- V: 1.6
 
 local version = "1.5"
 
@@ -415,39 +415,35 @@ function findProgram(program)
     return out
 end
 
-function initializeLOG(dir, maxBits)
+function initializeLOG(nameFile, maxBits)
     if maxBits == nil then maxBits = 15000 end
-    if not fs.exists(dir..'data/log.log') then
-        print("Initializing LOG plugin...\nCreating a log.log file!")
+    if not fs.exists(nameFile) then
+        print("Initializing LOG plugin...\nCreating a log file in "..nameFile.."!")
         createLog("LOG/INFO", "Initialized LOG", "w")
     else
-        if fs.getSize(dir.."data/log.log") > maxBits then
-            fs.delete(dir.."data/log.log")
-            print("Deleting LOG file...\nCreating a new log.log file!")
+        if fs.getSize(nameFile) > maxBits then
+            fs.delete(nameFile)
+            print("Deleting LOG file...\nCreating a new log file in "..nameFile.."!")
             createLog("LOG/INFO", "Initialized LOG", "w")
         end
     end
 end
 
-function createLog(item, data, dir, type, notify)
-    if dir == nil then dir = "" end
+function createLog(item, data, nameFile, type, notify)
     local time = os.date('*t')
     local logData = "["..time.hour..":"..time.min..":"..time.sec.."] ["..item.."]: "..data
-    if not fs.exists(dir..'data') then
-        fs.makeDir(dir..'data')
+    if not fs.exists(nameFile) then
+        fs.makeDir(nameFile)
+    end
+    if notify then
+        print("Creating LOG in "..nameFile.." log file to "..item)
     end
     local f
     if not type then
-        if notify then
-            print("Creating LOG in "..dir.."data/log.log file to "..item)
-        end
-        f = fs.open(dir.."data/log.log", "a")
+        f = fs.open(nameFile, "a")
         f.write("\n"..logData)
     else
-        if notify then
-            print("Creating LOG in "..dir.."data/log.log file to "..item)
-        end
-        f = fs.open(dir.."data/log.log", type)
+        f = fs.open(nameFile, type)
         f.write(logData)
     end
     f.close()
