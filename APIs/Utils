@@ -2,7 +2,7 @@
 -- License MIT
 -- V: 1.6
 
-local version = "1.5"
+local version = "1.6"
 
 function serialize(data, name)
     if not fs.exists('SS/data') then
@@ -415,38 +415,56 @@ function findProgram(program)
     return out
 end
 
-function initializeLOG(nameFile, maxBits)
+---------------------- TODO make this as functional as possible
+
+function initializeLOG(dir, maxBits)
     if maxBits == nil then maxBits = 15000 end
-    if not fs.exists(nameFile) then
-        print("Initializing LOG plugin...\nCreating a log file in "..nameFile.."!")
-        createLog("LOG/INFO", "Initialized LOG", "w")
+    if dir == nil then dir = "" end
+    if not fs.exists(dir..'log.log') then
+        print("Initializing LOG plugin...\nCreating a log.log file!")
+        createLog("LOG/INFO", "Initialized LOG", dir)
     else
-        if fs.getSize(nameFile) > maxBits then
-            fs.delete(nameFile)
-            print("Deleting LOG file...\nCreating a new log file in "..nameFile.."!")
-            createLog("LOG/INFO", "Initialized LOG", "w")
+        if fs.getSize(dir.."log.log") > maxBits then
+            fs.delete(dir.."log.log")
+            print("Deleting LOG file...\nCreating a new log.log file!")
+            createLog("LOG/INFO", "Initialized LOG", dir)
         end
     end
 end
 
-function createLog(item, data, nameFile, type, notify)
+function createLog(item, data, dir, type, notify)
+    if dir == nil then dir = "" end
     local time = os.date('*t')
     local logData = "["..time.hour..":"..time.min..":"..time.sec.."] ["..item.."]: "..data
-    if not fs.exists(nameFile) then
-        fs.makeDir(nameFile)
+    if not fs.exists(dir) then
+        fs.makeDir(dir)
     end
     if notify then
-        print("Creating LOG in "..nameFile.." log file to "..item)
+        print("Creating LOG in "..dir.."log.log file to "..item)
     end
     local f
     if not type then
-        f = fs.open(nameFile, "a")
+        f = fs.open(dir.."log.log", "a")
         f.write("\n"..logData)
     else
-        f = fs.open(nameFile, type)
+        f = fs.open(dir.."log.log", type)
         f.write(logData)
     end
     f.close()
+end
+
+-----------------------------------------
+function parsedCompletion(completion, tbl, invalid)
+    local _
+    while true do
+        _ = read(nil, nil, function(txt) return completion.choice(txt, tbl) end)
+        for k,v in pairs(tbl) do
+            if _ == v then
+                return _
+            end
+        end
+        print(invalid or "Invalid input, please select one of the completation commands!")
+    end
 end
 
 --
