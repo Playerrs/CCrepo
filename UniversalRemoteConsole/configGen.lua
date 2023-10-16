@@ -1,5 +1,5 @@
 -- Created by Player_rs
--- V: 1.1
+-- V: 1.2
 
 
 -- Langs
@@ -7,18 +7,18 @@ local lang = {}
 
 lang.pt_br = {
     ['pocketName'] = "Escreva o nome que você quer para este Pocket",
-    ['newInstance'] = "Vamos criar sua primeira instância, por favor digite o nome dela",
+    ['newInstance'] = "Vamos criar sua instância, por favor digite o nome dela",
     ['modemChannel'] = "Insira agora o canal que você vai usar nesta instância ( entre 0 e 65535 )",
     ['anotherInstance'] = "Deseja criar outra instância? (y/N)",
-    ['allDone'] = "Tudo pronto! Agora aproveite seu Remote Console XD"
+    ['allDone'] = "Tudo pronto! Agora aproveite seu Remote Console XD\n Redirecionando..."
 }
 
 lang.en_us = {
     ['pocketName'] = "Write the name you want for this Pocket",
-    ['newInstance'] = "Let's create your first instance, please enter its name",
+    ['newInstance'] = "Let's create your instance, please enter its name",
     ['modemChannel'] = "Now, enter the channel you will use for this instance (between 0 and 65535)",
     ['anotherInstance'] = "Do you want to create another instance? (y/N)",
-    ['allDone'] = "All set! Now enjoy your Remote Console XD"
+    ['allDone'] = "All set! Now enjoy your Remote Console XD\n Redirecting..."
 }
 
 lang.__string = {}
@@ -98,3 +98,4 @@ end
 createInstance()
 
 print("\n".. LANG.allDone)
+os.sleep(3)
