@@ -29,7 +29,7 @@ for k,v in pairs(lang)do
 end
 
 -- Load Deps
-local completion = os.loadAPI("rom/modules/main/cc/completion")
+local completion = require "cc.completion"
 os.loadAPI('/deps/Utils')
 local utils = Utils
 
