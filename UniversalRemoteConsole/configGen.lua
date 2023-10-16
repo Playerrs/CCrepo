@@ -1,5 +1,5 @@
 -- Created by Player_rs
--- V: 1.2
+-- V: 1.3
 
 
 -- Langs
@@ -10,7 +10,7 @@ lang.pt_br = {
     ['newInstance'] = "Vamos criar sua instância, por favor digite o nome dela",
     ['modemChannel'] = "Insira agora o canal que você vai usar nesta instância ( entre 0 e 65535 )",
     ['anotherInstance'] = "Deseja criar outra instância? (y/N)",
-    ['allDone'] = "Tudo pronto! Agora aproveite seu Remote Console XD\n Redirecionando..."
+    ['allDone'] = "Tudo pronto! Aproveite seu %s XD\n Redirecionando..."
 }
 
 lang.en_us = {
@@ -18,7 +18,7 @@ lang.en_us = {
     ['newInstance'] = "Let's create your instance, please enter its name",
     ['modemChannel'] = "Now, enter the channel you will use for this instance (between 0 and 65535)",
     ['anotherInstance'] = "Do you want to create another instance? (y/N)",
-    ['allDone'] = "All set! Now enjoy your Remote Console XD\n Redirecting..."
+    ['allDone'] = "All set! Enjoy your %s XD\n Redirecting..."
 }
 
 lang.__string = {}
@@ -97,5 +97,5 @@ end
 
 createInstance()
 
-print("\n".. LANG.allDone)
-sleep(3)
+print("\n".. LANG.allDone:format(_pocketName))
+sleep(2)
