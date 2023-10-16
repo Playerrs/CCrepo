@@ -104,7 +104,7 @@ local function parseTyped(self, str, key)
     end
 end
 
-function remoteAPI:run(self, func)
+function remoteAPI:run(self, AFunc, func)
 
     local function waitMessage()
         local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
@@ -125,6 +125,7 @@ function remoteAPI:run(self, func)
     end
 
     while true do
+        if AFunc then AFunc() end
         parallel.waitForAny(waitMessage, waitKey)
         if func then func() end
     end
