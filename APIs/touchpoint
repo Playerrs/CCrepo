@@ -49,11 +49,11 @@ local function setupLabel(buttonLen, minY, maxY, name)
 end
 
 local Button = {
-    draw = function(self)
+    draw = function(self, clear)
         local old = term.redirect(self.mon)
         term.setTextColor(colors.white)
         term.setBackgroundColor(colors.black)
-        term.clear()
+        if clear then term.clear() end
         for name, buttonData in pairs(self.buttonList) do
             if buttonData.active then
                 term.setBackgroundColor(buttonData.activeColor)
