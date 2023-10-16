@@ -464,7 +464,7 @@ function parsedCompletion(completion, tbl, invalid)
                 return _
             end
         end
-        print(invalid or "Invalid input, please select one of the completation commands!")
+        print(invalid or "Invalid input, please select one of the completion commands!")
     end
 end
 
