@@ -191,8 +191,9 @@ local Button = {
     -- Added finish
 }
 
-function new(monSide)
+function new(name, monSide)
     local buttonInstance = {
+        name = name,
         side = monSide or "term",
         mon = monSide and peripheral.wrap(monSide) or term.current(),
         buttonList = {},
