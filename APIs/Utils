@@ -457,6 +457,7 @@ end
 function parsedCompletion(completion, tbl, invalid)
     local _
     while true do
+        term.write(">> ")
         _ = read(nil, nil, function(txt) return completion.choice(txt, tbl) end)
         for k,v in pairs(tbl) do
             if _ == v then
