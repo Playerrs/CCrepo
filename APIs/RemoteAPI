@@ -15,9 +15,8 @@ function remoteAPI.new(name, channel)
         previousSent = {},
     }
 
+    self.modem.closeAll()
     self.modem.open(channel)
-
-
 
     setmetatable(self, remoteAPI)
     return self
