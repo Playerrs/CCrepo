@@ -98,4 +98,4 @@ end
 createInstance()
 
 print("\n".. LANG.allDone)
-os.sleep(3)
+sleep(3)
