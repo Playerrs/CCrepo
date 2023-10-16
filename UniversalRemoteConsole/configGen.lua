@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 1.3
+-- V: 1.4
 
-
+local version = 1.4
 -- Langs
 local lang = {}
 
@@ -97,5 +97,6 @@ end
 
 createInstance()
 
+createLog("LOG/INFO", "All configurations made successfully! Exiting the configGen, V"..version)
 print("\n".. LANG.allDone:format(_pocketName))
 sleep(2)
