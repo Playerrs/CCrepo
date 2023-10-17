@@ -62,9 +62,17 @@ local function saveJson(fileName, data, index, reWrite)
     if not fs.exists(fileName..'.lua') or reWrite then
         local f = fs.open(fileName..'.lua', 'w')
         if index then
-            f.write(textutils.serialize({ [index] = data }))
+            if type(data) == "table" then
+                f.write(textutils.serialize({ [index] = { data } }))
+            else
+                f.write(textutils.serialize({ [index] = data }))
+            end
         else
-            f.write(textutils.serialize(data))
+            if type(data) == "table" then
+                f.write(textutils.serialize({data}))
+            else
+                f.write(textutils.serialize(data))
+            end
         end
         f.close()
     else
