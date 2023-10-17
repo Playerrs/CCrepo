@@ -1,8 +1,8 @@
 -- Created by Player_rs
 -- License MIT
--- V: 1.6
+-- V: 1.7
 
-local version = "1.6"
+local version = "1.7"
 
 function serialize(data, name)
     if not fs.exists('SS/data') then
@@ -103,6 +103,41 @@ function isSelected(name, nameId, currentSelected)
         term.setTextColor(colors.white)
         return name
     end
+end
+
+function saveData(fileName, data, index, reWrite)
+    if not fs.exists(fileName..'.lua') or reWrite then
+        local f = fs.open(fileName..'.lua', 'w')
+        if index then
+            if type(data) == "table" then
+                f.write(textutils.serialize({ [index] = { data } }))
+            else
+                f.write(textutils.serialize({ [index] = data }))
+            end
+        else
+            if type(data) == "table" then
+                f.write(textutils.serialize({data}))
+            else
+                f.write(textutils.serialize(data))
+            end
+        end
+        f.close()
+    else
+        local f = fs.open(fileName..'.lua', 'r')
+        local rData = textutils.unserialize(f.readAll())
+        f.close()
+        if index then table.insert(rData[index], data) else table.insert(rData, data) end
+        f = fs.open(fileName..'.lua', 'w')
+        f.write(textutils.serialize(rData))
+        f.close()
+    end
+end
+
+function loadData(fileName)
+    local f = fs.open(fileName..'.lua', 'r')
+    local data = textutils.unserialize(f.readAll())
+    f.close()
+    return data
 end
 
 function getInputKey(maxOptions, var)
