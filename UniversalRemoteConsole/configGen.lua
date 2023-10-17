@@ -73,7 +73,7 @@ local function saveJson(fileName, data, index, reWrite)
         f.close()
         if index then table.insert(rData[index], data) else table.insert(rData, data) end
         f = fs.open(fileName..'.json', 'w')
-        f.write(textutils.serializeJSON(data))
+        f.write(textutils.serializeJSON(rData))
         f.close()
     end
 end
