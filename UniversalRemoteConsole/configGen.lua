@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 1.4
+-- V: 1.5
 
-local version = 1.4
+local version = 1.5
 -- Langs
 local lang = {}
 
@@ -58,7 +58,7 @@ createLog("LOG/INFO", "New Pocket name: ".. _pocketName)
 
 utils.reset()
 
-local function saveJson(fileName, data, index, reWrite)
+local function saveData(fileName, data, index, reWrite)
     if not fs.exists(fileName..'.lua') or reWrite then
         local f = fs.open(fileName..'.lua', 'w')
         if index then
@@ -88,22 +88,6 @@ local function saveJson(fileName, data, index, reWrite)
     end
 end
 
-local function saveInstance(instance)
-    if not fs.exists('data/instances.json') then
-        local f = fs.open('data/instances.json', 'w')
-        f.write(textutils.serializeJSON({ instances = {instance} }))
-        f.close()
-    else
-        local f = fs.open('data/instances.json', 'r')
-        local data = textutils.unserializeJSON(f.readAll())
-        f.close()
-        table.insert(data.instances, instance)
-        f = fs.open('data/instances.json', 'w')
-        f.write(textutils.serializeJSON(data))
-        f.close()
-    end
-end
-
 local function createInstance()
     print(LANG.newInstance)
     term.write(">> ")
@@ -114,7 +98,7 @@ local function createInstance()
     local _instanceModem = tonumber(read())
     textutils.tabulate({name = _instanceName, channel = _instanceModem})
     createLog("LOG/INFO", "New Instance Created, Name: ".._instanceName..", Modem Channel: ".._instanceModem )
-    saveJson('data/config', {name = _instanceName, channel = _instanceModem}, 'instances')
+    saveData('data/config', {name = _instanceName, channel = _instanceModem}, 'instances')
     print()
     print(LANG.anotherInstance)
     local answer = utils.getAnswer(true)
