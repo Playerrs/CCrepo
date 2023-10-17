@@ -58,6 +58,22 @@ createLog("LOG/INFO", "New Pocket name: ".. _pocketName)
 
 utils.reset()
 
+local function saveJson(fileName, instance)
+    if not fs.exists(fileName..'.json') then
+        local f = fs.open(fileName..'.json', 'w')
+        f.write(textutils.serializeJSON(instance))
+        f.close()
+    else
+        local f = fs.open(fileName..'.json', 'r')
+        local data = textutils.unserializeJSON(f.readAll())
+        f.close()
+        table.insert(data, instance)
+        f = fs.open(fileName..'.json', 'w')
+        f.write(textutils.serializeJSON(data))
+        f.close()
+    end
+end
+
 local function saveInstance(instance)
     if not fs.exists('data/instances.json') then
         local f = fs.open('data/instances.json', 'w')
@@ -84,7 +100,7 @@ local function createInstance()
     local _instanceModem = tonumber(read())
     textutils.tabulate({name = _instanceName, channel = _instanceModem})
     createLog("LOG/INFO", "New Instance Created, Name: ".._instanceName..", Modem Channel: ".._instanceModem )
-    saveInstance({name = _instanceName, channel = _instanceModem})
+    saveJson('data/config', {instances = {name = _instanceName, channel = _instanceModem}})
     print()
     print(LANG.anotherInstance)
     local answer = utils.getAnswer(true)
