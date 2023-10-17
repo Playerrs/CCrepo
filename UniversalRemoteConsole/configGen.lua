@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 1.5
+-- V: 1.51
 
-local version = 1.5
+local version = 1.51
 -- Langs
 local lang = {}
 
@@ -47,6 +47,7 @@ print("Please select your language!")
 local selectedLang = utils.parsedCompletion(completion, lang.__string)
 local LANG = lang[selectedLang]
 createLog("LOG/INFO", "language set to: ".. selectedLang)
+utils.saveData('data/config', selectedLang, 'language')
 
 utils.reset()
 
