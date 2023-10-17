@@ -59,21 +59,21 @@ createLog("LOG/INFO", "New Pocket name: ".. _pocketName)
 utils.reset()
 
 local function saveJson(fileName, data, index, reWrite)
-    if not fs.exists(fileName..'.json') or reWrite then
-        local f = fs.open(fileName..'.json', 'w')
+    if not fs.exists(fileName..'.lua') or reWrite then
+        local f = fs.open(fileName..'.lua', 'w')
         if index then
-            f.write(textutils.serializeJSON({ [index] = data }))
+            f.write(textutils.serialize({ [index] = data }))
         else
-            f.write(textutils.serializeJSON(data))
+            f.write(textutils.serialize(data))
         end
         f.close()
     else
-        local f = fs.open(fileName..'.json', 'r')
-        local rData = textutils.unserializeJSON(f.readAll())
+        local f = fs.open(fileName..'.lua', 'r')
+        local rData = textutils.unserialize(f.readAll())
         f.close()
         if index then table.insert(rData[index], data) else table.insert(rData, data) end
-        f = fs.open(fileName..'.json', 'w')
-        f.write(textutils.serializeJSON(rData))
+        f = fs.open(fileName..'.lua', 'w')
+        f.write(textutils.serialize(rData))
         f.close()
     end
 end
