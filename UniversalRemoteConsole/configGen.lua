@@ -58,36 +58,6 @@ createLog("LOG/INFO", "New Pocket name: ".. _pocketName)
 
 utils.reset()
 
-local function saveData(fileName, data, index, reWrite)
-    if not fs.exists(fileName..'.lua') or reWrite then
-        local f = fs.open(fileName..'.lua', 'w')
-        if index then
-            utils.debug(type(data))
-            sleep(3)
-            if type(data) == "table" then
-                f.write(textutils.serialize({ [index] = { data } }))
-            else
-                f.write(textutils.serialize({ [index] = data }))
-            end
-        else
-            if type(data) == "table" then
-                f.write(textutils.serialize({data}))
-            else
-                f.write(textutils.serialize(data))
-            end
-        end
-        f.close()
-    else
-        local f = fs.open(fileName..'.lua', 'r')
-        local rData = textutils.unserialize(f.readAll())
-        f.close()
-        if index then table.insert(rData[index], data) else table.insert(rData, data) end
-        f = fs.open(fileName..'.lua', 'w')
-        f.write(textutils.serialize(rData))
-        f.close()
-    end
-end
-
 local function createInstance()
     print(LANG.newInstance)
     term.write(">> ")
@@ -98,7 +68,7 @@ local function createInstance()
     local _instanceModem = tonumber(read())
     textutils.tabulate({name = _instanceName, channel = _instanceModem})
     createLog("LOG/INFO", "New Instance Created, Name: ".._instanceName..", Modem Channel: ".._instanceModem )
-    saveData('data/config', {name = _instanceName, channel = _instanceModem}, 'instances')
+    utils.saveData('data/config', {name = _instanceName, channel = _instanceModem}, 'instances')
     print()
     print(LANG.anotherInstance)
     local answer = utils.getAnswer(true)
