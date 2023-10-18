@@ -69,7 +69,7 @@ utils.reset()
 -- Load Instances
 if editableType[1] == "instances" then
     loadedInstances = utils.loadData('data/config').instances
-    instance = args
+    instance = { name = args[1], channel = args[2] }
 end
 
 -- Functions
