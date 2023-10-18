@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.4
+-- V: 0.41
 
-local version = 0.4
+local version = 0.41
 -- Langs
 local lang = {}
 
@@ -41,7 +41,7 @@ local instance
 local modInstance
 
 -- LOG configuration
-local configLogDir = '.configLOG/'
+local configLogDir = '.configGenLogs/'
 utils.initializeLOG(configLogDir, 1000)
 
 local function createLog(item, data, type, notify)
@@ -74,7 +74,7 @@ local function findInstance(instanceName)
 end
 
 -- USER
-utils.printCenter(LANG.tip, true, 2)
+utils.printMultiLines(LANG.tip, 2)
 
 if editableType == "instances" then
     print("\n\n"..LANG.instances.changeName)
