@@ -1,8 +1,8 @@
 -- Created by Player_rs
 -- License MIT
--- V: 1.71
+-- V: 1.72
 
-local version = "1.71"
+local version = "1.72"
 
 function serialize(data, name)
     if not fs.exists('SS/data') then
@@ -105,11 +105,11 @@ function isSelected(name, nameId, currentSelected)
     end
 end
 
-function saveData(fileName, data, index, reWrite)
+function saveData(fileName, data, index, indexType, reWrite)
     if not fs.exists(fileName..'.lua') or reWrite then
         local f = fs.open(fileName..'.lua', 'w')
         if index then
-            if type(data) == "table" then
+            if type(data) == "table" or indexType == "table" then
                 f.write(textutils.serialize({ [index] = { data } }))
             else
                 f.write(textutils.serialize({ [index] = data }))
@@ -126,7 +126,14 @@ function saveData(fileName, data, index, reWrite)
         local f = fs.open(fileName..'.lua', 'r')
         local rData = textutils.unserialize(f.readAll())
         f.close()
-        if index then rData[index] = {} table.insert(rData[index], data) else table.insert(rData, data) end
+        if index then
+            if rData[index] == nil and type(data) == "table" or rData[index] == nil and indexType == "table" then
+                rData[index] = {}
+            end
+            table.insert(rData[index], data)
+        else
+            table.insert(rData, data)
+        end
         f = fs.open(fileName..'.lua', 'w')
         f.write(textutils.serialize(rData))
         f.close()
