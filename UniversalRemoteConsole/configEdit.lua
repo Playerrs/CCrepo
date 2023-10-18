@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.44
+-- V: 0.45
 
-local version = 0.44
+local version = 0.45
 -- Langs
 local lang = {}
 
@@ -93,10 +93,10 @@ if editableType == "instances" then
     term.write(">> ")
     local _instanceChannel = read()
     if _instanceChannel ~= "" and _instanceChannel ~= " " then
-        modInstance.channel = _instanceChannel
+        modInstance.channel = tonumber(_instanceChannel)
         createLog("LOG/WARN", "'Instance ["..modInstance.name.."], CHANNEL changed to: "..modInstance.channel)
     else
-        modInstance.channel = instance.channel
+        modInstance.channel = tonumber(instance.channel)
     end
     print()
 
