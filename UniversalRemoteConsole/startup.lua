@@ -1,5 +1,5 @@
 -- Created by Player_rs
--- V: 0.2
+-- V: 0.5
 
 -- check requirements
 if not fs.exists('deps/touchpoint') then
@@ -14,8 +14,23 @@ if not fs.exists('deps/Utils') then
     shell.run('wget https://raw.githubusercontent.com/Playerrs/CCrepo/master/APIs/Utils /deps/Utils')
 end
 
-if not fs.exists('data/instances.json') then
+if not fs.exists('data/config.lua') then
     shell.run('wget run https://raw.githubusercontent.com/Playerrs/CCrepo/master/UniversalRemoteConsole/configGen.lua')
+end
+
+if fs.exists('.editArgs') then
+    local f = fs.open('.editArgs', 'r')
+    local data = textutils.unserialize(f.readAll())
+    f.close()
+    local function run()
+        shell.run("configEdit.lua ", data[1], data[2], data[3], data[4])
+    end
+    local function wait()
+        while true do
+            sleep(1)
+        end
+    end
+    parallel.waitForAll(run, wait)
 end
 
 -- load requirements
@@ -27,6 +42,7 @@ local utils = Utils
 
 -- variables
 local backgroundColor = colors.green
+local buttonsColor = colors.lime
 local W, H = term.getSize()
 local actualInstance
 local listInstances
@@ -38,22 +54,29 @@ local pocket = remote.new("Sla", 1520)
 -- menus
 local actualMenu
 local main_menu = tp.new()
+local console_menu = tp.new()
 local instances_menu = tp.new()
+local editInstance_menu = tp.new()
 
 -- data
 local function loadInstances()
-    local f = fs.open('data/instances.json', 'r')
+    local f = fs.open('data/config.lua', 'r')
     local data = f.readAll()
     f.close()
-    data = textutils.unserializeJSON(data)
+    data = textutils.unserialize(data)
     return data.instances
 end
 
 -- screen
-local function background(clear)
+
+local function setInstanceToPocket(instance)
+    pocket = remote.new(instance.name, instance.channel)
+end
+
+local function background(clear, nRows)
     if clear then utils.reset() end
     local _color = term.getBackgroundColor()
-    local rows = 1
+    local rows = nRows or 1
     for iH = 1, rows do
         for iW = 1, W do
             term.setCursorPos(iW, iH)
@@ -66,28 +89,49 @@ local function background(clear)
     term.setCursorPos(1, 3)
 end
 
-local function writeInstanceName(instance)
-    local _color = term.getBackgroundColor()
-    term.setCursorPos(W - (#instance+1), 1)
+
+local function getUserInput()
+    local x, y = 1, math.floor((H/2)-3)
     term.setBackgroundColor(backgroundColor)
-    term.write(instance)
-    term.setBackgroundColor(_color)
+
+    for _width = 1, W do
+        for _height = y, y+4 do
+            if _width == 1 or _width == W then term.setBackgroundColor(buttonsColor) end
+            if _height == y or _height == y+4 then term.setBackgroundColor(buttonsColor) end
+
+            term.setCursorPos(_width, _height)
+            term.write(" ")
+            term.setBackgroundColor(backgroundColor)
+        end
+    end
+    term.setCursorPos(x+1, y+2)
+    term.write("> ")
+    local msg = read()
+    return msg
 end
+
 
 main_menu:add("Instances", function()
     actualMenu = instances_menu
     listeningModem = false
     background(true)
+end, (W/2)-5, (H/2)-2, (W/2)+5, (H/2), buttonsColor, buttonsColor)
+
+main_menu:add("Settings", function()
+    -- TODO Settings
+end, (W/2)-5, (H/2)+2, (W/2)+5, (H/2)+4, buttonsColor, buttonsColor)
+
+console_menu:add("Instances", function()
+    actualMenu = instances_menu
+    listeningModem = false
+    background(true)
 end, 1, 1, 11, 1, backgroundColor, backgroundColor)
 
-local function setInstanceToPocket(instance)
-    pocket = remote.new(instance.name, instance.channel)
-end
+
 
 -- Runtimes (in plural ?)
 
 actualMenu = main_menu
-actualInstance = loadInstances()[1]
 
 local function handleInstances()
     listInstances = loadInstances()
@@ -100,24 +144,44 @@ local function handleInstances()
 
     for i =1, #listInstances do
         for k,v in pairs(listInstances[i]) do
-            --utils.debug(k,v)
-            --sleep(1)
-            if k == "name" then
-                instances_menu:add(v, function()
-                    actualInstance = listInstances[i]
-                    actualMenu = main_menu
-                    setInstanceToPocket(listInstances[i])
-                end, x, y-1, W, y+1, colors.blue, backgroundColor)
-                y = y+3
+            if n < 6 then
+                if k == "name" then
+                    instances_menu:add(v, function()
+                        actualInstance = listInstances[i]
+                        actualMenu = console_menu
+                        setInstanceToPocket(listInstances[i])
+                    end, x, y-1, W, y+1, buttonsColor, buttonsColor)
+                    y = y+3
+                    n = n+1
+                end
             end
         end
     end
 
-    instances_menu:add("<", function()
-        actualMenu = main_menu
-        listeningModem = true
-        background(true)
-    end, 1, H, 5, H, backgroundColor, backgroundColor)
+    if actualInstance then
+        instances_menu:add("<", function()
+            actualMenu = console_menu
+            listeningModem = true
+            background(true)
+        end, 1, H, 5, H, backgroundColor, backgroundColor)
+    end
+end
+
+local function editInstance(instance)
+    background(true)
+
+    editInstance_menu:add("Rename", function()
+        instance.name = getUserInput()
+    end, (W/2)-5, (H/2)-2, (W/2)+5, (H/2), buttonsColor, buttonsColor)
+
+    editInstance_menu:add("Channel", function()
+        instance.channel = getUserInput()
+        utils.debug(instance.channel)
+        sleep(2)
+    end, (W/2)-5, (H/2)+2, (W/2)+5, (H/2)+4, buttonsColor, buttonsColor)
+
+    actualMenu = editInstance_menu
+    -- TODO save the Instance
 end
 
 local function runAlways()
@@ -125,7 +189,7 @@ local function runAlways()
 
     background(true)
 
-    if actualMenu == main_menu then
+    if actualMenu == console_menu then
         for k,v in pairs(pocket.lastMessages)do
             print(v)
         end
@@ -134,8 +198,38 @@ local function runAlways()
         term.write("> " .. pocket.typed)
 
         background()
+
+        for k,v in pairs(actualMenu.buttonList) do
+            if k ~= "Instances" then
+                actualMenu:remove(k)
+            end
+        end
+        actualMenu:add(actualInstance.name, function() -- TODO download only one time?
+            if fs.exists('configEdit.lua') then
+                shell.run("delete configEdit.lua")
+            end
+            shell.run("wget https://raw.githubusercontent.com/Playerrs/CCrepo/master/UniversalRemoteConsole/configEdit.lua")
+            local f = fs.open('.editArgs', 'w')
+            local data = {"instances", actualInstance.name, actualInstance.channel}
+            f.write(textutils.serialize(data))
+            f.close()
+            --multishell.launch({}, 'configEdit.lua', "instances", actualInstance.name, actualInstance.channel)
+            --shell.exit()
+            --shell.run('configEdit.lua', "instances", actualInstance.name, actualInstance.channel)
+            --shell.run("delete configEdit.lua")
+            os.reboot()
+        end, W - (#actualInstance.name+1), 1, W, 1, backgroundColor)
+
         actualMenu:draw(false)
-        writeInstanceName(actualInstance.name)
+
+    elseif actualMenu == editInstance_menu then
+        background(true)
+        editInstance_menu:draw()
+
+    elseif actualMenu == main_menu then
+        background(true, 3)
+        main_menu:draw(false)
+        utils.printCenter("  Universal Remote Console", false, 2, nil, backgroundColor)
 
     else
         background()
@@ -167,8 +261,14 @@ while true do
         end
     end
 
-
     parallel.waitForAny(pocketRun, callEvent)
-
 end
 
+--- OLD
+--local function writeInstanceName(instance)
+--    local _color = term.getBackgroundColor()
+--    term.setCursorPos(W - (#instance+1), 1)
+--    term.setBackgroundColor(backgroundColor)
+--    term.write(instance)
+--    term.setBackgroundColor(_color)
+--end
