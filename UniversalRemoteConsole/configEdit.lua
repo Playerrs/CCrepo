@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.3
+-- V: 0.4
 
-local version = 0.3
+local version = 0.4
 -- Langs
 local lang = {}
 
@@ -31,7 +31,6 @@ for k,v in pairs(lang)do
 end
 
 -- Load Deps
-local completion = require "cc.completion"
 os.loadAPI('/deps/Utils')
 local utils = Utils
 local args = { ... }
@@ -52,17 +51,9 @@ createLog("LOG/INFO", "Starting ConfigEdit program V:"..version)
 
 utils.reset()
 
--- Select or load Language
+-- load Language
 local selectedLang
-local LANG
-if not fs.exists('data/config.lua') then
-    print("Please select your language!")
-    selectedLang = utils.parsedCompletion(completion, lang.__string)
-    createLog("LOG/INFO", "language set to: ".. selectedLang)
-    LANG = lang[selectedLang]
-else
-    LANG = utils.loadData('data/config').language or "en_us"
-end
+local LANG = utils.loadData('data/config').language or "en_us"
 
 utils.reset()
 utils.debug(editableType, args[1], args[2])
