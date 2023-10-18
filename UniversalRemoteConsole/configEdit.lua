@@ -115,5 +115,5 @@ if editableType == "instances" then
 end
 
 if fs.exists('.editArgs') then
-    shell.runt("delete .editArgs")
+    shell.run("delete .editArgs")
 end
