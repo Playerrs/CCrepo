@@ -53,10 +53,9 @@ utils.reset()
 
 -- load Language
 local selectedLang
-local LANG = utils.loadData('data/config').language or "en_us"
+local LANG = lang[utils.loadData('data/config').language or "en_us"]
 
 utils.reset()
---utils.debug(editableType, args[1], args[2])
 
 -- Load Instances
 if editableType == "instances" then
