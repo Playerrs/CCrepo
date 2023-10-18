@@ -1,8 +1,8 @@
 -- Created by Player_rs
 -- License MIT
--- V: 1.72
+-- V: 1.73
 
-local version = "1.72"
+local version = "1.73"
 
 function serialize(data, name)
     if not fs.exists('SS/data') then
@@ -141,10 +141,13 @@ function saveData(fileName, data, index, indexType, reWrite)
 end
 
 function loadData(fileName)
-    local f = fs.open(fileName..'.lua', 'r')
-    local data = textutils.unserialize(f.readAll())
-    f.close()
-    return data
+    if fs.exists(fileName..".lua") then
+        local f = fs.open(fileName..'.lua', 'r')
+        local data = textutils.unserialize(f.readAll())
+        f.close()
+        return data
+    end
+    return nil, "File not Found"
 end
 
 function getInputKey(maxOptions, var)
@@ -475,6 +478,12 @@ function initializeLOG(dir, maxBits)
 end
 
 function createLog(item, data, dir, type, notify)
+    local _color = term.getTextColor()
+    if item:find("WARN") then
+        term.setTextColor(colors.yellow)
+    elseif item:find("ERROR") then
+        term.setTextColor(colors.red)
+    end
     if dir == nil then dir = "" end
     local time = os.date('*t')
     local logData = "["..time.hour..":"..time.min..":"..time.sec.."] ["..item.."]: "..data
@@ -493,6 +502,7 @@ function createLog(item, data, dir, type, notify)
         f.write(logData)
     end
     f.close()
+    term.setTextColor(_color)
 end
 
 -----------------------------------------
