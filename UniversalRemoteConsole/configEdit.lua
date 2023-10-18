@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.42
+-- V: 0.43
 
-local version = 0.42
+local version = 0.43
 -- Langs
 local lang = {}
 
@@ -116,4 +116,5 @@ end
 
 if fs.exists('.editArgs') then
     shell.run("delete .editArgs")
+    os.reboot()
 end
