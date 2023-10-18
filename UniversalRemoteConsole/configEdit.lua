@@ -10,7 +10,7 @@ lang.pt_br = {
     instances = {
         ['changeName'] = "Digite o novo nome para sua instância",
         ['changeChannel'] = "Digite o novo canal para ser usado em sua instância",
-        ['delete'] = "Para deletar esta instância digite: DELETE",
+        ['delete'] = "Para deletar esta instância, digite: DELETE",
     }
 }
 
@@ -65,6 +65,7 @@ else
 end
 
 utils.reset()
+utils.debug(editableType, args[1], args[2])
 
 -- Load Instances
 if editableType == "instances" then
