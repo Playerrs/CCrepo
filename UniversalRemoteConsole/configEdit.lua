@@ -114,7 +114,7 @@ if editableType == "instances" then
     _configFile['instances'] = loadedInstances
 end
 
-utils.saveData('data/config', _data, nil, nil, true)
+utils.saveData('data/config', _configFile, nil, nil, true)
 createLog("LOG/INFO", "Edited settings saved!")
 
 if fs.exists('.editArgs') then
