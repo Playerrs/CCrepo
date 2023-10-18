@@ -1,8 +1,8 @@
 -- Created by Player_rs
 -- License MIT
--- V: 1.74
+-- V: 1.75
 
-local version = "1.74"
+local version = "1.75"
 
 function serialize(data, name)
     if not fs.exists('SS/data') then
@@ -115,11 +115,7 @@ function saveData(fileName, data, index, indexType, reWrite)
                 f.write(textutils.serialize({ [index] = data }))
             end
         else
-            if type(data) == "table" then
-                f.write(textutils.serialize({data}))
-            else
-                f.write(textutils.serialize(data))
-            end
+            f.write(textutils.serialize(data))
         end
         f.close()
     else
