@@ -1,24 +1,26 @@
 -- Created by Player_rs
--- V: 0.1
+-- V: 0.3
 
-local version = 0.1
+local version = 0.3
 -- Langs
 local lang = {}
 
 lang.pt_br = {
-    ['pocketName'] = "Escreva o nome que você quer para este Pocket",
-    ['newInstance'] = "Vamos criar sua instância, por favor digite o nome dela",
-    ['modemChannel'] = "Insira agora o canal que você vai usar nesta instância ( entre 0 e 65535 )",
-    ['anotherInstance'] = "Deseja criar outra instância? (y/N)",
-    ['allDone'] = "Tudo pronto! Aproveite seu %s XD\n Redirecionando..."
+    tip = "SE NÃO QUISER ALTERAR ALGUMA INFORMAÇÃO APENAS DEIXE EM BRANCO",
+    instances = {
+        ['changeName'] = "Digite o novo nome para sua instância",
+        ['changeChannel'] = "Digite o novo canal para ser usado em sua instância",
+        ['delete'] = "Para deletar esta instância digite: DELETE",
+    }
 }
 
 lang.en_us = {
-    ['pocketName'] = "Write the name you want for this Pocket",
-    ['newInstance'] = "Let's create your instance, please enter its name",
-    ['modemChannel'] = "Now, enter the channel you will use for this instance (between 0 and 65535)",
-    ['anotherInstance'] = "Do you want to create another instance? (y/N)",
-    ['allDone'] = "All set! Enjoy your %s XD\n Redirecting..."
+    tip = "IF YOU DO NOT WANT TO CHANGE ANY INFORMATION, JUST LEAVE IT BLANK",
+    instances = {
+        ['changeName'] = "Enter the new name for your instance",
+        ['changeChannel'] = "Enter the new channel to be used in your instance",
+        ['delete'] = "To delete this instance, type: DELETE",
+    }
 }
 
 lang.__string = {}
@@ -32,7 +34,9 @@ end
 local completion = require "cc.completion"
 os.loadAPI('/deps/Utils')
 local utils = Utils
-local editableValue = { ... }
+local args = { ... }
+local editableType = args[1]
+table.remove(args, 1)
 local loadedInstances
 local instance
 local modInstance
@@ -63,9 +67,9 @@ end
 utils.reset()
 
 -- Load Instances
-if editableValue[1] == "instances" then
+if editableType[1] == "instances" then
     loadedInstances = utils.loadData('data/config').instances
-    instance = editableValue[2]
+    instance = args
 end
 
 -- Functions
@@ -79,9 +83,9 @@ local function findInstance(instanceName)
 end
 
 -- USER
-utils.printCenter(LANG.tip)
+utils.printCenter(LANG.tip, true, 2)
 
-if editableValue[1] == "instances" then
+if editableType[1] == "instances" then
     print("\n\n"..LANG.instances.changeName)
     term.write(">> ")
     local _instanceName = read()
@@ -109,7 +113,7 @@ if editableValue[1] == "instances" then
     local _deleteInstance = read()
     if _deleteInstance == "DELETE" then
         modInstance = nil
-        createLog("LOG/WARN", "INSTANCE DELETED, instance name: "..modInstance.name)
+        createLog("LOG/WARN", "INSTANCE WIL BE DELETED, instance name: "..modInstance.name)
     end
     print()
 
