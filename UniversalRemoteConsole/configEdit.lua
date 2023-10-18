@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.43
+-- V: 0.44
 
-local version = 0.43
+local version = 0.44
 -- Langs
 local lang = {}
 
@@ -39,6 +39,7 @@ table.remove(args, 1)
 local loadedInstances
 local instance
 local modInstance = {}
+local _configFile = utils.loadData('data/config')
 
 -- LOG configuration
 local configLogDir = '.configEditLogs/'
@@ -110,9 +111,11 @@ if editableType == "instances" then
 
     loadedInstances[findInstance(instance.name)] = modInstance
 
-    utils.saveData('data/config', loadedInstances, 'instances')
-    createLog("LOG/INFO", "New instances configs saved!")
+    _configFile['instances'] = loadedInstances
 end
+
+utils.saveData('data/config', _data, nil, nil, true)
+createLog("LOG/INFO", "Edited settings saved!")
 
 if fs.exists('.editArgs') then
     shell.run("delete .editArgs")
