@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.45
+-- V: 0.46
 
-local version = 0.45
+local version = 0.46
 -- Langs
 local lang = {}
 
@@ -104,8 +104,8 @@ if editableType == "instances" then
     term.write(">> ")
     local _deleteInstance = read()
     if _deleteInstance == "DELETE" then
-        modInstance = nil
         createLog("LOG/WARN", "INSTANCE WIL BE DELETED, instance name: "..modInstance.name)
+        modInstance = nil
     end
     print()
 
