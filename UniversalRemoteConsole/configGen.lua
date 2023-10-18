@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 1.51
+-- V: 1.52
 
-local version = 1.51
+local version = 1.52
 -- Langs
 local lang = {}
 
@@ -10,7 +10,7 @@ lang.pt_br = {
     ['newInstance'] = "Vamos criar sua instância, por favor digite o nome dela",
     ['modemChannel'] = "Insira agora o canal que você vai usar nesta instância ( entre 0 e 65535 )",
     ['anotherInstance'] = "Deseja criar outra instância? (y/N)",
-    ['allDone'] = "Tudo pronto! Aproveite seu %s XD\n Redirecionando..."
+    ['allDone'] = "Tudo pronto! Aproveite seu %s XD\nRedirecionando..."
 }
 
 lang.en_us = {
@@ -18,7 +18,7 @@ lang.en_us = {
     ['newInstance'] = "Let's create your instance, please enter its name",
     ['modemChannel'] = "Now, enter the channel you will use for this instance (between 0 and 65535)",
     ['anotherInstance'] = "Do you want to create another instance? (y/N)",
-    ['allDone'] = "All set! Enjoy your %s XD\n Redirecting..."
+    ['allDone'] = "All set! Enjoy your %s XD\nRedirecting..."
 }
 
 lang.__string = {}
@@ -34,7 +34,7 @@ os.loadAPI('/deps/Utils')
 local utils = Utils
 
 -- LOG configuration
-local configLogDir = '.configLOG/'
+local configLogDir = '.configGenLogs/'
 utils.initializeLOG(configLogDir, 1000)
 
 local function createLog(item, data, type, notify)
