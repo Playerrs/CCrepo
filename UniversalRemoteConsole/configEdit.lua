@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.41
+-- V: 0.42
 
-local version = 0.41
+local version = 0.42
 -- Langs
 local lang = {}
 
@@ -38,10 +38,10 @@ local editableType = args[1]
 table.remove(args, 1)
 local loadedInstances
 local instance
-local modInstance
+local modInstance = {}
 
 -- LOG configuration
-local configLogDir = '.configGenLogs/'
+local configLogDir = '.configEditLogs/'
 utils.initializeLOG(configLogDir, 1000)
 
 local function createLog(item, data, type, notify)
@@ -112,4 +112,8 @@ if editableType == "instances" then
 
     utils.saveData('data/config', loadedInstances, 'instances')
     createLog("LOG/INFO", "New instances configs saved!")
+end
+
+if fs.exists('.editArgs') then
+    shell.runt("delete .editArgs")
 end
