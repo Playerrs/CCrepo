@@ -67,7 +67,7 @@ end
 utils.reset()
 
 -- Load Instances
-if editableType[1] == "instances" then
+if editableType == "instances" then
     loadedInstances = utils.loadData('data/config').instances
     instance = { name = args[1], channel = args[2] }
 end
@@ -85,7 +85,7 @@ end
 -- USER
 utils.printCenter(LANG.tip, true, 2)
 
-if editableType[1] == "instances" then
+if editableType == "instances" then
     print("\n\n"..LANG.instances.changeName)
     term.write(">> ")
     local _instanceName = read()
