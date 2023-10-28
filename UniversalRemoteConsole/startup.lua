@@ -127,7 +127,8 @@ console_menu:add("Instances", function()
     background(true)
 end, 1, 1, 11, 1, backgroundColor, backgroundColor)
 
-
+--- TODO mudar display para ficar ok de ver os enviados e recebidos
+--- TODO USAR O PROPRIO CONSOLE PARA EDITAR/DELETAR CRIAR UMA INSTANCIA COM CHANNEL -1 E ELE LER ISSO; COMO ? NAO SEI AINDA
 
 -- Runtimes (in plural ?)
 
@@ -163,8 +164,12 @@ local function handleInstances()
             actualMenu = console_menu
             listeningModem = true
             background(true)
-        end, 1, H, 5, H, backgroundColor, backgroundColor)
+        end, 1, H, 5, H, buttonsColor, buttonsColor)
     end
+
+    instances_menu:add("+", function()
+        os.shutdown() --- TODO THIS
+    end, W-5, H, W, H, buttonsColor, buttonsColor)
 end
 
 local function editInstance(instance)
