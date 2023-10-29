@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.48
+-- V: 0.49
 
-local version = 0.48
+local version = 0.49
 -- Langs
 local lang = {}
 
@@ -65,6 +65,13 @@ if editableType == "instances" then
 end
 
 -- Functions
+local function writeActualValue(value)
+    local _color = term.getTextColor()
+    term.setTextColor(colors.green)
+    term.write(string.format(">> %s <<", value))
+    term.setTextColor(_color)
+end
+
 local function findInstance(instanceName)
     for i = 1, #loadedInstances do
         if loadedInstances[i].name == instanceName then
@@ -78,7 +85,7 @@ end
 utils.printMultiLines(LANG.tip, 2)
 
 if editableType == "instances" then
-    print("\n\n"..string.format(">> [%s] <<", instance.name))
+    writeActualValue(instance.name)
     print(LANG.instances.changeName)
     term.write(">> ")
     local _instanceName = read()
@@ -90,7 +97,7 @@ if editableType == "instances" then
     end
     print()
 
-    print(string.format(">> [%s] <<", instance.channel))
+    writeActualValue(instance.channel)
     print(LANG.instances.changeChannel)
     term.write(">> ")
     local _instanceChannel = read()
