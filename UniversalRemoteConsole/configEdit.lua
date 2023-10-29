@@ -1,7 +1,7 @@
 -- Created by Player_rs
--- V: 0.47
+-- V: 0.48
 
-local version = 0.47
+local version = 0.48
 -- Langs
 local lang = {}
 
@@ -78,8 +78,8 @@ end
 utils.printMultiLines(LANG.tip, 2)
 
 if editableType == "instances" then
-    print(string.format(">> [%s] <<", modInstance.name))
-    print("\n\n"..LANG.instances.changeName)
+    print("\n\n"..string.format(">> [%s] <<", instance.name))
+    print(LANG.instances.changeName)
     term.write(">> ")
     local _instanceName = read()
     if _instanceName ~= "" and _instanceName ~= " " then
@@ -90,7 +90,7 @@ if editableType == "instances" then
     end
     print()
 
-    print(string.format(">> [%s] <<", modInstance.channel))
+    print(string.format(">> [%s] <<", instance.channel))
     print(LANG.instances.changeChannel)
     term.write(">> ")
     local _instanceChannel = read()
