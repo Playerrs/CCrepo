@@ -1,6 +1,6 @@
 -- Created by Player_rs
 -- License MIT
--- V: 0.6
+-- V: 0.61
 
 local remoteAPI = {}
 remoteAPI.__index = remoteAPI
@@ -13,6 +13,7 @@ function remoteAPI.new(name, channel)
         lastMessages = {},
         typed = "",
         previousSent = {},
+        oldMessage = {},
     }
 
     self.modem.closeAll()
@@ -23,7 +24,7 @@ function remoteAPI.new(name, channel)
 end
 
 local __keysBlackList = {
-    "CapsLock",
+    "capsLock",
     "tab",
     "leftCtrl",
     "rightCtrl",
@@ -45,8 +46,18 @@ local function limitedTable(t, insertion)
 end
 
 local function sendMessage(self, str)
-    self.modem.transmit(self.channel, self.channel, str)
     limitedTable(self.previousSent, str)
+    self.modem.transmit(self.channel, self.channel, str)
+end
+
+local function typeLastMessage(self)
+    if self.oldMessage.active then
+        self.oldMessage = { key = self.oldMessage.key - 1 }
+        self.oldMessage = { message = self.previousSent[self.oldMessage.key] }
+    else
+        self.oldMessage = { active = true, message = self.previousSent[#self.previousSent], key = #self.previousSent }
+    end
+    return self.oldMessage.message
 end
 
 local function parseTyped(self, str, key)
@@ -59,6 +70,10 @@ local function parseTyped(self, str, key)
     if key == "enter" or key == "numPadEnter" then
         sendMessage(self, self.typed)
         return ""
+    end
+
+    if key == "up" then
+        return typeLastMessage(self)
     end
 
     if key == "space" then
@@ -108,7 +123,6 @@ function remoteAPI:run(self, AFunc, func)
     local function waitMessage()
         local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
         if channel ~= self.channel then
-            self.waitUpdate()
             return
         end
         limitedTable(self.lastMessages, message)
