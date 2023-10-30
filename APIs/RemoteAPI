@@ -1,6 +1,6 @@
 -- Created by Player_rs
 -- License MIT
--- V: 0.62
+-- V: 0.7
 
 local remoteAPI = {}
 remoteAPI.__index = remoteAPI
@@ -32,7 +32,9 @@ local __keysBlackList = {
     "rightAlt",
     "leftShift",
     "rightShift",
-    "unknownKey"
+    "unknownKey",
+    "left",
+    "right"
 }
 
 local function limitedTable(t, insertion)
@@ -52,16 +54,38 @@ end
 
 local function typeLastMessage(self, backwards)
     if self.oldMessage.active then
-        if backwards then
-            self.oldMessage = { key = self.oldMessage.key - 1 }
-        else
-            self.oldMessage = { key = self.oldMessage.key + 1 }
+        self.oldMessage.key = self.oldMessage.key - 1
+
+        if self.oldMessage.key ~= nil and self.oldMessage.key < 1 then
+            self.oldMessage.key = 1
         end
-        self.oldMessage = { message = self.previousSent[self.oldMessage.key] }
-    else
+
+        self.oldMessage.message = self.previousSent[self.oldMessage.key]
+    end
+
+    if self.oldMessage.key == nil then
         self.oldMessage = { active = true, message = self.previousSent[#self.previousSent], key = #self.previousSent }
     end
+
     return self.oldMessage.message
+end
+
+local function typeNextMessage(self)
+    if self.oldMessage.active then
+        self.oldMessage.key = self.oldMessage.key + 1
+
+        if self.oldMessage.key ~= nil and self.oldMessage.key > #self.previousSent then
+            self.oldMessage.key = nil
+            self.oldMessage.active = false
+            return ""
+        end
+
+        self.oldMessage.message = self.previousSent[self.oldMessage.key]
+
+        return self.oldMessage.message
+    end
+
+    return ""
 end
 
 local function parseTyped(self, str, key)
@@ -71,17 +95,20 @@ local function parseTyped(self, str, key)
         end
     end
 
-    if key == "enter" or key == "numPadEnter" then
-        sendMessage(self, self.typed)
-        return ""
-    end
-
     if key == "up" then
         return typeLastMessage(self)
     end
 
     if key == "down" then
-        return
+        return typeNextMessage(self)
+    end
+
+    self.oldMessage.active = false
+    self.oldMessage.key = nil
+
+    if key == "enter" or key == "numPadEnter" then
+        sendMessage(self, self.typed)
+        return ""
     end
 
     if key == "space" then
