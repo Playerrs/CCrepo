@@ -1,5 +1,5 @@
 -- Created by Player_rs
--- V: 0.5
+-- V: 0.51
 
 -- check requirements
 if not fs.exists('deps/touchpoint') then
@@ -46,6 +46,7 @@ local buttonsColor = colors.lime
 local W, H = term.getSize()
 local actualInstance
 local listInstances
+local prefix = "> "
 local listeningModem = true
 
 -- create a RemoteAPI object
@@ -195,12 +196,12 @@ local function runAlways()
     background(true)
 
     if actualMenu == console_menu then
-        for k,v in pairs(pocket.lastMessages)do
+        for k,v in pairs(pocket.history)do
             print(v)
         end
 
         term.setCursorPos(1, H)
-        term.write("> " .. pocket.typed)
+        term.write(prefix .. pocket.typed)
 
         background()
 
