@@ -13,22 +13,25 @@ local W, H = mon.getSize()
 mon.clear()
 mon.setCursorPos(1, 1)
 local lever = false
+local color = colors.white
 
 
 local function turnSignalOn(msg)
-    mon.setTextColor(colors.green)
+    color = colors.red
+    mon.setTextColor(color)
     rs.setOutput(outputSig, true)
     mon.write(msg)
 end
 
 local function turnSignalOff(msg)
-    mon.setTextColor(colors.green)
+    color = colors.green
+    mon.setTextColor(color)
     rs.setOutput(outputSig, false)
     mon.write(msg)
 end
 
 local function printStatus(data)
-    mon.setCursorPos(W/2, math.ceil(H/2))
+    mon.setCursorPos(W/2, math.ceil(H/2)+1)
     if data.mana >= max or lever then
         turnSignalOn("OFF!")
     else
@@ -37,21 +40,34 @@ local function printStatus(data)
 end
 
 local function leverStatus()
-    mon.setCursorPos(W/2, math.ceil(H/2)+2)
+    mon.setCursorPos(W/2, math.ceil(H/2)+3)
     lever = rs.getInput(inputSig)
+    if lever then
+        mon.setTextColor(colors.yellow)
+        mon.write("Lever ON!")
+    end
 end
 
 while true do
 
     local data = reader.getBlockData()
-    mon.clear()
-    mon.setTextColor(colors.white)
-    mon.setCursorPos(1, 2)
-    mon.write("   Mana Farm")
 
     leverStatus()
 
     printStatus(data)
+
+    mon.clear()
+    mon.setTextColor(color)
+    mon.setCursorPos(1, 1)
+    mon.write(string.rep(" ", W))
+
+    mon.setTextColor(colors.white)
+    mon.setCursorPos(1, 2)
+    mon.write("   Mana Farm")
+
+    mon.setTextColor(color)
+    mon.setCursorPos(1, 3)
+    mon.write(string.rep(" ", W))
 
 
     sleep(coolDown)
