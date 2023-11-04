@@ -1,5 +1,5 @@
 -- Created by Player_rs
--- V: 0.1
+-- V: 0.2
 
 local reader = peripheral.find("blockReader")
 local mon = peripheral.wrap("left")
@@ -39,8 +39,8 @@ local function printStatus(data)
     end
 end
 
-local function leverStatus()
-    mon.setCursorPos(W/2, math.ceil(H/2)+3)
+local function leverStatus() -- TODO Add a button to change this value
+    mon.setCursorPos(4, 8)
     lever = rs.getInput(inputSig)
     if lever then
         mon.setTextColor(colors.yellow)
@@ -49,25 +49,24 @@ local function leverStatus()
 end
 
 while true do
-
+    mon.clear()
     local data = reader.getBlockData()
 
     leverStatus()
 
     printStatus(data)
 
-    mon.clear()
-    mon.setTextColor(color)
-    mon.setCursorPos(1, 1)
-    mon.write(string.rep(" ", W))
 
+    mon.setBackgroundColor(color)
+    for i = 1, 3 do
+        mon.setCursorPos(1, i)
+        mon.write(string.rep(" ", W))
+    end
+    mon.setCursorPos(4, 2)
     mon.setTextColor(colors.white)
-    mon.setCursorPos(1, 2)
-    mon.write("   Mana Farm")
+    mon.write("Mana Farm")
+    mon.setBackgroundColor(colors.black)
 
-    mon.setTextColor(color)
-    mon.setCursorPos(1, 3)
-    mon.write(string.rep(" ", W))
 
 
     sleep(coolDown)
