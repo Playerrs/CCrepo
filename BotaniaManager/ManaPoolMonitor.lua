@@ -1,3 +1,6 @@
+-- Created by Player_rs
+-- V: 0.1
+
 local reader = peripheral.find("blockReader")
 local mon = peripheral.find("monitor")
 mon.setTextScale(0.5)
@@ -35,7 +38,8 @@ while true do
 
     local data = reader.getBlockData()
     local var1 = data.mana
-    local var2 = 10000000 -- Can be used data.manaCap in a Mana Pool or this number in a Mana Battery
+    local var2 = data.manaCap or 10000000 -- data.manaCap in a Mana Pool or this number in a Mana Battery
+
 
     drawBar(2, 2, W-3, colors.white)
     drawBar(2, 2, regra3(var1, var2, W-3), colors.green)
